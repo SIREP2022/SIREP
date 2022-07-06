@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head'); %>
+    <title>SENA</title>
+</head>
+<body>
+  <div class="content-header">
+    <%- include('../partials/header-admin') %> 
+  </div>
+  <div class="main-contenedor">
+    <section class="body-info-section">
+      <div class="contnet-section-info">
+        <div class="full-container">
+          <h1 class="h-title">Panel de Administración - Asignar</h1>
+          <hr class="separador-text">
+          <div class="border-box">
+              <div class="row-box">
+                  <div class="wrapper-form-data">
+                      <div class="input-data">
+                        <input type="text" name="nombres" size="40" maxlength="50" required="">
+                          <div class="underline">
+                          </div>
+                        <label>Nombres</label>
+                      </div>
+                  </div>
+                  <div class="wrapper-form-data">
+                      <div class="input-data">
+                        <input type="text" name="nombres" size="40" maxlength="50" required="">
+                          <div class="underline">
+                          </div>
+                        <label>Apellidos</label>
+                      </div>
+                  </div>
+              </div>
+              <div class="row-box">
+                  <div class="wrapper-form-data">
+                      <select class="form-control">
+                          <option value="c.c">C.C</option>
+                          <option value="t.i">T.I</option>
+                          <option value="c.e">C.E</option>
+                      </select>
+                  </div>
+                  <div class="wrapper-form-data">
+                      <div class="input-data">
+                        <input type="text" name="nombres" size="40" maxlength="50" required="">
+                          <div class="underline">
+                          </div>
+                        <label>Número de documento</label>
+                      </div>
+                  </div>
+              </div>
+              <div class="row-box">
+                  <div>
+                      <p>Check Box</p>
+                      <label class="switch">
+                          <input type="checkbox"
+                          v-model="activityInfo.uploadFiles">
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
+                  
+              </div>
+              <div>
+              </div>
+              <button class="btn btn-primary">Registrar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <%- include('../partials/footer'); %>
+  <%- include('../partials/scripts.ejs') %> 
+</body>
+</html>

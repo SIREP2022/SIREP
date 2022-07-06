@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head'); %>
+    <link rel="stylesheet" href="css/tabla.listas.css">
+    <link rel="stylesheet" href="css/form.productos.css">
+    <title>SENA</title>
+</head>
+
+<body>
+    <div class="content-header">
+        <%- include('../partials/header-admin') %>
+    </div>
+    <div class="main-contenedor">
+        <div class="body-info-section">
+            <div class="full-container">
+                <div class="breadcrumb">
+                    <a href="/admin" class="go-home">Volver al inicio </a> | <a href="#">Productos</a>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <h1 class="h-title">Administrar Productos de Unidades Productivas</h1>
+                    </div>
+                    <div class="col-md-4">
+                        <a onclick="MostrarRegistroproductos();" class="btn-new"><i class="icon-library_add"></i> Nuevo Producto</a>
+                    </div>
+                </div>
+                <div class="table-admin mt-1">
+                    <table id="table-productos" class="table-info">
+                        <thead>
+                            <th>Id Producto</th>
+                            <th>Nombre</th>
+                            <th>Imagen</th>
+                            <th>Descripcion</th>
+                            <th>Estado</th>
+                            <th>Reserva</th>
+                            <th>Unidad Productiva</th>
+                            <th>Maximo Reserva</th>
+                            <th>Tipo</th>
+                            <th>Inventario</th>
+                            <th>Hora Inicio</th>
+                            <th>Hora Fin</th>
+                            <th>Admin</th>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- MODAL REGISTRAR -->
+            <div class="modal fade" id="modalpdtoregistro" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Registrar Productos</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="form_registro_productos" enctype="multipart/form-data">
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Nombre del Producto</label>
+                                        <input type="text" class="form-control" id="nombreproducto">
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Imagen del Producto</label>
+                                        <input class="form-control " type="file" name="fileNpdto" id="fileNpdto">
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Unidad Productiva</label>
+                                        <select class="form-select" id="unidadproductiva"
+                                            aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <% for(var i=0; i<Unidadesproductivas.length;i++){%>
+                                                <option value="<%=Unidadesproductivas[i].codigo_up%>">
+                                                    <%=Unidadesproductivas[i].Nombre%>
+                                                </option>
+                                                <% } %>
+                                        </select>
+                                    </div>
+                                </div><br>
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Descripcion</label>
+                                        <input class="form-control" id="descripcionproducto" type="text"
+                                            value="Este producto es del Sena" aria-label="default input example">
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">¿Qué Tipo de producto es?</label>
+                                        <select id="tipoproducto" class="form-select"
+                                            aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <option value="Venta">Venta</option>
+                                            <option value="Servicio">Servicio</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">¿Se puede Reservar?</label>
+                                        <select id="reservaproducto" class="form-select"
+                                            aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <option value="Si">Si</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div><br>
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Maximo de Reserva</label>
+                                        <input type="number" id="reservamaxima" class="form-control">
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Hora Inicio de reserva</label>
+                                        <input type="time" class="form-control" id="horainicio" value="07:00">
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Hora Fin de reserva</label>
+                                        <input type="time" class="form-control" id="horafin" value="17:00">
+                                    </div>
+                                </div><br>
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">¿Desea llevara un control de
+                                            Inventario?</label>
+                                        <select id="controlinventario" class="form-select"
+                                            aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <option value="Si">Si</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Estado</label>
+                                        <select class="form-select" id="estadoproducto"
+                                            aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <option value="Activo">Activo</option>
+                                            <option value="Inactivo">Inactivo</option>
+                                        </select>
+                                    </div>
+                                </div><br>
+                            </form>
+                            <div class="row">
+                                <div class="form-group col-8">
+                                </div>
+                                <div class="form-group col-4">
+                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;"
+                                        onclick="RegistrarProducto();">Registrar Producto</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- MODAL -->
+            <!-- MODAL ACTUALIZAR PRODUCTOS -->
+            <div class="modal fade" id="modalpdtoactual" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Actualizar Productos <input type="text" id="id_pdto" size="5"
+                                    disabled></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form enctype="multipart/form-data">
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Nombre del Producto</label>
+                                        <input type="text" class="form-control" id="nombreproductoact">
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Imagen del Producto</label>
+                                        <input class="form-control " type="file" name="fileNpdto" id="fileNact">
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Unidad Productiva</label>
+                                        <select class="form-select" id="unidadproductivaact"
+                                            aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <% for(var i=0; i<Unidadesproductivas.length;i++){%>
+                                                <option value="<%=Unidadesproductivas[i].codigo_up%>">
+                                                    <%=Unidadesproductivas[i].Nombre%>
+                                                </option>
+                                                <% } %>
+                                        </select>
+                                    </div>
+                                </div><br>
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Descripcion</label>
+                                        <input class="form-control" id="descripcionproductoact" type="text"
+                                            value="Este producto es del Sena" aria-label="default input example">
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">¿Qué Tipo de producto es?</label>
+                                        <select id="tipoproductoact" class="form-select"
+                                            aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <option value="Venta">Venta</option>
+                                            <option value="Servicio">Servicio</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">¿Se puede Reservar?</label>
+                                        <select id="reservaproductoact" class="form-select"
+                                            aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <option value="Si">Si</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div><br>
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Maximo de Reserva</label>
+                                        <input type="number" id="reservamaximaact" class="form-control">
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Hora Inicio de reserva</label>
+                                        <input type="time" class="form-control" id="horainicioact">
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Hora Fin de reserva</label>
+                                        <input type="time" class="form-control" id="horafinact">
+                                    </div>
+                                </div><br>
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">¿Desea llevara un control de
+                                            Inventario?</label>
+                                        <select id="controlinventarioact" class="form-select"
+                                            aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <option value="Si">Si</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Estado</label>
+                                        <select class="form-select" id="estadoproductoact"
+                                            aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <option value="Activo">Activo</option>
+                                            <option value="Inactivo">Inactivo</option>
+                                        </select>
+                                    </div>
+                                </div><br>
+                            </form>
+                            <div class="row">
+                                <div class="form-group col-8">
+                                </div>
+                                <div class="form-group col-4">
+                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;"
+                                        onclick="Actaulizarpdto();">Actualizar Producto</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--  -->
+            <!-- MODAL -->
+            <!-- MODAL REGISTRAR Precios-->
+            <div class="modal fade" id="modalprecioregistro" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Registrar Productos <input type="text" size="5" id="id_pdto_sale"
+                                    disabled><input type="text" size="5" id="id_sale" disabled></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="form_sale">
+                                <div class="row">
+                                    <div class="form-group col-6">
+                                        <label for="formGroupExampleInput">Cargo</label>
+                                        <select id="cargo" class="form-select" aria-label="Default select example">
+                                            <option selected disabled>Seleccionar...</option>
+                                            <option value="1">Aprendiz</option>
+                                            <option value="2">Instructor</option>
+                                            <option value="3">Administrativo</option>
+                                            <option value="4">Externo</option>
+                                            <option value="5">Auxiliares</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="formGroupExampleInput">Precio </label>
+                                        <input class="form-control " type="number" id="precioproducto">
+                                    </div>
+                                </div><br>
+                            </form>
+                            <div class="row">
+                                <div class="form-group col-6">
+                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;"
+                                        onclick="ActualizarPrecio()">Actualizar Precio</button>
+                                </div>
+                                <div class="form-group col-6">
+                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;"
+                                        onclick="RegistrarPrecio();">Registrar Precio</button>
+                                </div>
+                            </div>
+                            <div class="container"><br><br>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h4>Lista de Precios</h4>
+                                        <table id="tablaprecios" class="table" style="width:100%;">
+                                            <thead>
+                                                <tr class="line-precio">
+                                                    <th>Cargo</th>
+                                                    <th>Producto</th>
+                                                    <th>Precio</th>
+                                                    <th>Admin</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- MODAL -->
+        </div>
+    </div>
+    </div>
+    <%- include('../partials/footer') %>
+    <%- include('../partials/scripts.ejs') %>
+    <script src="js/catch.producto.js"></script>
+</body>
+
+</html>

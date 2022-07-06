@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head'); %>
+    <title>SENA</title>
+</head>
+<body>
+    <div class="content-header">
+        <%- include('../partials/header-admin') %> 
+    </div>
+    <div class="main-contenedor">
+        <section class="body-info-section">
+            <div class="contnet-section-info" style="min-height: 50vh;">
+                <div class="full-container">
+                    <h1 class="h-title">Panel de Administración</h1>
+                    <hr class="separador-text">
+                    <div class="table-admin">
+                        <a href="usuarios">
+                            <div class="option">
+                                <div class="option-logo"></div>
+                                <div class="titulo">Asignar</div>
+                            </div>
+                        </a>
+                        <a href="#">
+                            <div class="option">
+                                <div class="option-logo"></div>
+                                <div class="titulo">Seguimiento</div>
+                            </div>
+                        </a>
+                        <a href="#">
+                            <div class="option">
+                                <div class="option-logo"></div>
+                                <div class="titulo">Consultas</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <%- include('../partials/footer') %>
+    <%- include('../partials/scripts.ejs') %> 
+</body>
+</html>
+ 
+
