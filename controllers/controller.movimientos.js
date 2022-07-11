@@ -64,21 +64,15 @@ controladorMovimiento.agregarDetalle = async (req, resp) => {
     let movimiento = req.body.movimiento;
     let sessionCaro = parseInt(req.body.codCargo);
     let inventario = req.body.id_inventario;
+    let subtotal = req.body.subtotal;
+    let cantidad = req.body.canProd;
 
     if (!inventario || inventario == 'undefined') return console.log(inventario)
     try {
-        let precios = `select id_inventario, aprendiz, instructor, administrativo, externo, auxiliar, stock from lista_productos where id_inventario='${inventario}'`
+        let precios = `select id_inventario, aprendiz, instructor, administrativo, externo, auxiliar, porcentaje, stock from lista_productos where id_inventario='${inventario}'`
         let producto = `SELECT Codigo_pdto, MaxReserva, inventario FROM inventario i join productos p on i.fk_codigo_pdto = Codigo_pdto where id_inventario = '${inventario}';`
         let rows_precio = await query(precios);
         let producto_row = await query(producto);
-        let stock = rows_precio[0].stock;
-
-        if (cantidadProd > stock && producto_row[0].inventario == 'Si') return resp.json({ status: 'error', message: 'Has superado el límite de stock de este producto' })
-        let cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
-        where Id_movimiento = '${movimiento}' and Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${comprador}';`
-        let cantidadPdto_Rows = await query(cantidadPdto);
-        if((parseInt(cantidadPdto_Rows[0].cantidad) + parseInt(cantidadProd)) > parseInt(producto_row[0].MaxReserva)) return resp.json({status: 'error', message: 'Has superado el límite de stock de este producto'});
-        
         switch (sessionCaro) {
             case 1:
                 valorProd = rows_precio[0].aprendiz;
@@ -98,8 +92,21 @@ controladorMovimiento.agregarDetalle = async (req, resp) => {
             default:
                 break;
         }
-        let sql = `insert into detalle(cantidad, valor, Estado, Entregado, fecha, Persona, fk_Id_movimiento, fk_id_inventario)
-        values(${cantidadProd},${valorProd}, '${estadoProd}','${estadoEntr}',now(), ${comprador},${movimiento}, ${inventario})`;
+        let stock = rows_precio[0].stock;
+        let porcentaje = rows_precio[0].porcentaje;
+        if(!subtotal) subtotal = valorProd * cantidad;
+        console.log(porcentaje);
+
+
+        if (cantidadProd > stock && producto_row[0].inventario == 'Si') return resp.json({ status: 'error', message: 'Has superado el límite de stock de este producto' })
+        let cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
+        where Id_movimiento = '${movimiento}' and Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${comprador}';`
+        let cantidadPdto_Rows = await query(cantidadPdto);
+        if((parseInt(cantidadPdto_Rows[0].cantidad) + parseInt(cantidadProd)) > parseInt(producto_row[0].MaxReserva)) return resp.json({status: 'error', message: 'Has superado el límite de stock de este producto'});
+        
+       
+        let sql = `insert into detalle(cantidad, valor, Estado, Entregado, fecha, Persona, porcentaje, subtotal, fk_Id_movimiento, fk_id_inventario)
+        values(${cantidadProd},${valorProd}, '${estadoProd}','${estadoEntr}',now(), ${comprador},${porcentaje},${subtotal},${movimiento}, ${inventario})`;
         await query(sql);
         return resp.json({
             status: 200,

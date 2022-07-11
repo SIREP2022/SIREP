@@ -3,9 +3,9 @@
 
 <head>
     <%- include('../partials/head'); %>
-    <link rel="stylesheet" href="css/tabla.listas.css">
-    <link rel="stylesheet" href="css/form.productos.css">
-    <title>SENA</title>
+        <link rel="stylesheet" href="css/tabla.listas.css">
+        <link rel="stylesheet" href="css/form.productos.css">
+        <title>SENA</title>
 </head>
 
 <body>
@@ -33,12 +33,17 @@
                             <th>Nombre</th>
                             <th>Imagen</th>
                             <th>Descripcion</th>
-                            <th>Estado</th>
+                            
                             <th>Reserva</th>
                             <th>Unidad Productiva</th>
-                            <th>Maximo Reserva</th>
                             <th>Tipo</th>
                             <th>Inventario</th>
+                            <th>Medida</th>
+                            <th>Promocion</th>
+                            <th>Descuento</th>
+                            <th>Maximo Reserva</th>
+                            <th>Estado</th>
+
                             <th>Hora Inicio</th>
                             <th>Hora Fin</th>
                             <th>Admin</th>
@@ -49,8 +54,7 @@
                 </div>
             </div>
             <!-- MODAL REGISTRAR -->
-            <div class="modal fade" id="modalpdtoregistro" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="modalpdtoregistro" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -70,8 +74,7 @@
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">Unidad Productiva</label>
-                                        <select class="form-select" id="unidadproductiva"
-                                            aria-label="Default select example">
+                                        <select class="form-select" id="unidadproductiva" aria-label="Default select example">
                                             <option selected disabled>Seleccionar...</option>
                                             <% for(var i=0; i<Unidadesproductivas.length;i++){%>
                                                 <option value="<%=Unidadesproductivas[i].codigo_up%>">
@@ -84,13 +87,11 @@
                                 <div class="row">
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">Descripcion</label>
-                                        <input class="form-control" id="descripcionproducto" type="text"
-                                            value="Este producto es del Sena" aria-label="default input example">
+                                        <input class="form-control" id="descripcionproducto" type="text" value="Este producto es del Sena" aria-label="default input example">
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">¿Qué Tipo de producto es?</label>
-                                        <select id="tipoproducto" class="form-select"
-                                            aria-label="Default select example">
+                                        <select id="tipoproducto" class="form-select" aria-label="Default select example">
                                             <option selected disabled>Seleccionar...</option>
                                             <option value="Venta">Venta</option>
                                             <option value="Servicio">Servicio</option>
@@ -98,8 +99,7 @@
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">¿Se puede Reservar?</label>
-                                        <select id="reservaproducto" class="form-select"
-                                            aria-label="Default select example">
+                                        <select id="reservaproducto" class="form-select" aria-label="Default select example">
                                             <option selected disabled>Seleccionar...</option>
                                             <option value="Si">Si</option>
                                             <option value="No">No</option>
@@ -124,8 +124,7 @@
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">¿Desea llevara un control de
                                             Inventario?</label>
-                                        <select id="controlinventario" class="form-select"
-                                            aria-label="Default select example">
+                                        <select id="controlinventario" class="form-select" aria-label="Default select example">
                                             <option selected disabled>Seleccionar...</option>
                                             <option value="Si">Si</option>
                                             <option value="No">No</option>
@@ -133,21 +132,40 @@
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">Estado</label>
-                                        <select class="form-select" id="estadoproducto"
-                                            aria-label="Default select example">
+                                        <select class="form-select" id="estadoproducto" aria-label="Default select example">
                                             <option selected disabled>Seleccionar...</option>
                                             <option value="Activo">Activo</option>
                                             <option value="Inactivo">Inactivo</option>
                                         </select>
                                     </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Medidas</label>
+                                        <input type="text" class="form-control" id="medida">
+                                    </div>
+                                   
+                                </div><br>
+                                <div class="row">
+                                      <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">¿Tiene una Promocion?</label>
+                                        <select class="form-select" id="promocion" aria-label="Default select example">
+                                            <option selected value="No">No</option>
+                                            <option value="Si">Si</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-4" id="descCont">
+                                        <label for="porcentaje">Procentaje de Descuento</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="porcentaje" placeholder="20" aria-label="Descuento" aria-describedby="basic-addon1">
+                                            <span class="input-group-text" id="basic-addon1">%</span>
+                                        </div>
+                                        </div>
                                 </div><br>
                             </form>
                             <div class="row">
                                 <div class="form-group col-8">
                                 </div>
                                 <div class="form-group col-4">
-                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;"
-                                        onclick="RegistrarProducto();">Registrar Producto</button>
+                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;" onclick="RegistrarProducto();">Registrar Producto</button>
                                 </div>
                             </div>
                         </div>
@@ -156,13 +174,11 @@
             </div>
             <!-- MODAL -->
             <!-- MODAL ACTUALIZAR PRODUCTOS -->
-            <div class="modal fade" id="modalpdtoactual" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="modalpdtoactual" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Actualizar Productos <input type="text" id="id_pdto" size="5"
-                                    disabled></h5>
+                            <h5 class="modal-title">Actualizar Productos <input type="text" id="id_pdto" size="5" disabled></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -178,8 +194,7 @@
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">Unidad Productiva</label>
-                                        <select class="form-select" id="unidadproductivaact"
-                                            aria-label="Default select example">
+                                        <select class="form-select" id="unidadproductivaact" aria-label="Default select example">
                                             <option selected disabled>Seleccionar...</option>
                                             <% for(var i=0; i<Unidadesproductivas.length;i++){%>
                                                 <option value="<%=Unidadesproductivas[i].codigo_up%>">
@@ -192,13 +207,11 @@
                                 <div class="row">
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">Descripcion</label>
-                                        <input class="form-control" id="descripcionproductoact" type="text"
-                                            value="Este producto es del Sena" aria-label="default input example">
+                                        <input class="form-control" id="descripcionproductoact" type="text" value="Este producto es del Sena" aria-label="default input example">
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">¿Qué Tipo de producto es?</label>
-                                        <select id="tipoproductoact" class="form-select"
-                                            aria-label="Default select example">
+                                        <select id="tipoproductoact" class="form-select" aria-label="Default select example">
                                             <option selected disabled>Seleccionar...</option>
                                             <option value="Venta">Venta</option>
                                             <option value="Servicio">Servicio</option>
@@ -206,8 +219,7 @@
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">¿Se puede Reservar?</label>
-                                        <select id="reservaproductoact" class="form-select"
-                                            aria-label="Default select example">
+                                        <select id="reservaproductoact" class="form-select" aria-label="Default select example">
                                             <option selected disabled>Seleccionar...</option>
                                             <option value="Si">Si</option>
                                             <option value="No">No</option>
@@ -232,8 +244,7 @@
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">¿Desea llevara un control de
                                             Inventario?</label>
-                                        <select id="controlinventarioact" class="form-select"
-                                            aria-label="Default select example">
+                                        <select id="controlinventarioact" class="form-select" aria-label="Default select example">
                                             <option selected disabled>Seleccionar...</option>
                                             <option value="Si">Si</option>
                                             <option value="No">No</option>
@@ -241,21 +252,39 @@
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="formGroupExampleInput">Estado</label>
-                                        <select class="form-select" id="estadoproductoact"
-                                            aria-label="Default select example">
+                                        <select class="form-select" id="estadoproductoact" aria-label="Default select example">
                                             <option selected disabled>Seleccionar...</option>
                                             <option value="Activo">Activo</option>
                                             <option value="Inactivo">Inactivo</option>
                                         </select>
                                     </div>
+                                    <div class="form-group col-4">
+                                        <label for="formGroupExampleInput">Medidas</label>
+                                        <input type="text" class="form-control" id="medidaact">
+                                    </div>
                                 </div><br>
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                      <label for="formGroupExampleInput">¿Tiene una Promocion?</label>
+                                      <select class="form-select" id="promocionact" aria-label="Default select example">
+                                          <option selected value="No">No</option>
+                                          <option value="Si">Si</option>
+                                      </select>
+                                  </div>
+                                  <div class="col-4" id="descCont">
+                                      <label for="porcentaje">Procentaje de Descuento</label>
+                                      <div class="input-group">
+                                          <input type="number" class="form-control" id="porcentajeact" placeholder="20" aria-label="Descuento" aria-describedby="basic-addon1">
+                                          <span class="input-group-text" id="basic-addon1">%</span>
+                                      </div>
+                                      </div>
+                              </div><br>
                             </form>
                             <div class="row">
                                 <div class="form-group col-8">
                                 </div>
                                 <div class="form-group col-4">
-                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;"
-                                        onclick="Actaulizarpdto();">Actualizar Producto</button>
+                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;" onclick="Actaulizarpdto();">Actualizar Producto</button>
                                 </div>
                             </div>
                         </div>
@@ -265,13 +294,11 @@
             <!--  -->
             <!-- MODAL -->
             <!-- MODAL REGISTRAR Precios-->
-            <div class="modal fade" id="modalprecioregistro" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="modalprecioregistro" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Registrar Productos <input type="text" size="5" id="id_pdto_sale"
-                                    disabled><input type="text" size="5" id="id_sale" disabled></h5>
+                            <h5 class="modal-title">Registrar Productos <input type="text" size="5" id="id_pdto_sale" disabled><input type="text" size="5" id="id_sale" disabled></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -296,12 +323,10 @@
                             </form>
                             <div class="row">
                                 <div class="form-group col-6">
-                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;"
-                                        onclick="ActualizarPrecio()">Actualizar Precio</button>
+                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;" onclick="ActualizarPrecio()">Actualizar Precio</button>
                                 </div>
                                 <div class="form-group col-6">
-                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;"
-                                        onclick="RegistrarPrecio();">Registrar Precio</button>
+                                    <button class="btn btnact btn-lg" type="button" style="width: 100%;" onclick="RegistrarPrecio();">Registrar Precio</button>
                                 </div>
                             </div>
                             <div class="container"><br><br>
@@ -332,8 +357,8 @@
     </div>
     </div>
     <%- include('../partials/footer') %>
-    <%- include('../partials/scripts.ejs') %>
-    <script src="js/catch.producto.js"></script>
+        <%- include('../partials/scripts.ejs') %>
+            <script src="js/catch.producto.js"></script>
 </body>
 
 </html>

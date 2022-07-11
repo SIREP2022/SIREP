@@ -53,6 +53,8 @@ function Listar_Reservas_Pendientes(){
         var total=0;
         let numReservas = 0;
         data.forEach(e => {
+            console.log(e);
+
             if(e.id_detalle==null) return;
             numReservas++;
             reservas += 
