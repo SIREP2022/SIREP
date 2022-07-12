@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head'); %>
+    <link rel="stylesheet" href="css/produccionUp.css">
+    <title>SENA</title>
+</head>
+
+<body>
+    <div class="content-header">
+        <%- include('../partials/header-admin'); %>
+    </div>
+    <div class="main-contenedor">
+        <div class="body-info-section">
+            <div class="contenedor-general">
+                <div class="breadcrumb">
+                    <a href="/admin" class="go-home">Volver al inicio</a>  | <a href="#">Produccion</a>
+                </div>
+                <div class="row">
+                    <div class="col-md-6"><h1 class="h-title">Administrar Producción de la UP</h1></div>
+                    <div class="col-md-6"> 
+                        <a id="Openform" class="btn-edit2"
+                        data-bs-toggle="modal" data-bs-target="#myModal"> <span class="icon-library_add"></span> Nueva
+                        Producción</a>
+                    </div>
+                </div>
+                <div class="infoUp">
+                    <select id="unidadesPrd" onchange="Listar_Produccion();" class="form-select2">
+                        <% for(var i=0; i<up.length;i++){%>
+                            <option class="visible" value="<%=up[i].codigo_up%>">
+                                <%=up[i].Nombre%>
+                            </option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <div class="ListaProdu">
+                        <table class="table table-striped" id="tablaProducccion">
+                            <thead>
+                                <th>Id</th>
+                                <th>Producto</th>
+                                <th>Fecha</th>
+                                <th>Cantidad</th>
+                                <th>Observación</th>
+                                <th>Editar</th>
+                            </thead>
+                            <tbody id="tabla">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =============MODAL DE REGISTRO================= -->
+        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-s">
+                <div class="modal-content col-4">
+                    <div class="modal-header">
+                        <div class="reserva">
+                            <label class="encabezado">Registro de producción</label>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="main">
+                            <div class="date"><label id="date"></label><span class="icon-calendar"></span></div>
+                            <div class="content-main">
+                                <form id="form-produccion">
+                                    <h4 id="nameup" class="encabezado"></h4>
+                                    <select id="pdto" class="form-select">
+
+                                    </select>
+                                    <div id="namePdto"></div><br>
+                                    <div class="box3"><input class="infoCantidad" type="number" id="cantidad"
+                                            placeholder="Cantidad" min="1" max="50"></div>
+                                    <div class="describe">
+                                        Nuevas Observaciones<textarea style="width: 100%;" class="textDescribe" name="" id="observacion"
+                                            cols="30" rows="10"></textarea>
+                                    </div>
+                                    <div class="btn" style="width: 100%;"><input class="boton" type="button" value="Registar"
+                                            onclick="RegistrarProduccion();"></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ======================Lista de produccion====================== -->
+        <!-- ========================MODAL PARA EDITAR LA PRODUCCION================== -->
+        <div class="modal fade" id="myModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-s">
+                <div class="modal-content col-4">
+                    <div class="modal-header">
+                        <div class="reserva">
+                            <label class="encabezado">Editar Producción<input class="idproduccion"
+                                    id="codigo_produccion" type="text" disabled></label>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="main">
+                            <div class="date"><label id="date2"></label><span class="icon-calendar"></span></div>
+                            <div class="content-main"> </div>
+                            <form id="form-produccion">
+                                <label class="encabezado" id="productseleccionado"></label>
+                                <div id="namePdto"></div><br>
+                                <div class="box3">
+                                    <label class="editCantidad">Cantidad: </label>
+                                    <input class="infoCantidad" type="number" id="cantidadactu"
+                                        placeholder="Nueva cantidad" min="1" max="50">
+                                </div>
+                                <div class="describe">
+                                    Nuevas Observaciones<textarea style="width: 100%;" class="textDescribe" id="observacionactu" cols="30"
+                                        rows="10"></textarea>
+                                </div>
+                                <div class="btn" style="width: 100%;"><input class="boton" type="button" value="Actualizar"
+                                        onclick="EditarProduccion();"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <%- include('../partials/footer'); %>
+    <%- include('../partials/scripts'); %>
+    <script src="js/produccionUp.js"></script>
+</body>
+
+</html>
