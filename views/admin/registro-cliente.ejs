@@ -6,6 +6,7 @@
     <title>Administrar Clientes</title>
     <link rel="stylesheet" href="css/modulo-venta.css">
     <link rel="stylesheet" href="css/registro-clientes.css">
+    <style>.dt-buttons{float: left;}</style>
 </head>
 
 <body>
@@ -266,6 +267,7 @@
 
     <%- include('../partials/footer') %>
     <%- include('../partials/scripts.ejs') %>
+    <%- include('../partials/report-scripts.ejs') %> 
     <script src="js/libraries/read-excel-file.min.js"></script>
     <script src="js/catch.registro-clientes.js"></script>
 </body>
@@ -371,20 +373,9 @@
         this.failed_jobs.push(user)
       };
       /* ====DIV DE INFORMACIÓN==== */
-      let rows = '';
       let infoDiv = document.getElementById('info-div');
       let cargados = success_jobs.length + failed_jobs.length;
       document.getElementById('load-user').innerHTML = cargados;
-      failed_jobs.forEach(user => {
-        rows += `<tr>
-          <td>${user.identificacion}</td>
-          <td>${user.nombre}</td>
-          <td>${user.correo}</td></tr>
-          <td>${user.telefono}</td></tr>
-          <td>${user.ficha}</td></tr>
-          <td>${user.rol}</td></tr>
-          <td>${user.cargo}</td></tr>`
-      });
       if(cargados == this.usuarios_migrados.length) {
         let load_success = ``;
         let load_errors = ``;
@@ -398,21 +389,22 @@
         }
         if(failed_jobs.length > 0) {
           load_errors = `
-          <div class="card text-white bg-danger mb-3">
-            <div class="card-header">¡Surdieron ${failed_jobs.length} errores en la carga de usuarios!</div>
+          <div class="card mb-3">
+            <div class="card-header text-white bg-danger">¡Surdieron ${failed_jobs.length} errores en la carga de usuarios!</div>
             <div class="card-body">
-              <table class="table-errors" id="table-error">
+              <table class="table table-striped" id="table-error">
                 <thead>
                   <tr>
                     <th>Identificación</th>
                     <th>Nombre</th>
-                    <th>Correo</th></tr>
-                    <th>Teléfono</th></tr>
-                    <th>Ficha</th></tr>
-                    <th>Rol</th></tr>
-                    <th>Cargo</th></tr>
-                </thea>
-                <tbody>${rows}</tbody>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Ficha</th>
+                    <th>Rol</th>
+                    <th>Cargo</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
               </table>
             </div>
           </div>
@@ -421,12 +413,22 @@
         infoDiv.innerHTML = load_success + load_errors;
         $('#table-error').DataTable({
           "paging":true,
+          "autoWidth": false,
           "processing":true,
           "responsive":true,
           "destroy":true,
-          "data":json,
+          "data": failed_jobs,
           dom: 'Bfrtip',
           buttons:[ 'excel'],
+          columns:[
+                {"data": "identificacion"},
+                {"data": "nombre"},
+                {"data": "correo"},
+                {"data": "telefono"},
+                {"data": "ficha"},
+                {"data": "rol"},
+                {"data": "cargo"},
+            ]
         });
         document.getElementById('footer-regiter-modal').setAttribute('style', 'display:none');
         document.getElementById('excelInnpt').value = '';
