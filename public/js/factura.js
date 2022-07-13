@@ -52,7 +52,15 @@ function Facturar(Id_movimiento){
                 doc.setFontSize(12);
                 doc.text(175,26,fechaFormat);
                 doc.line(1,28,208, 28); // horizontal line
-                doc.text(5,34,'ID    Producto               ValorUnitario         Cant              Asignado                     Estado                  Valor');
+                doc.text(3,33, 'ID');
+                doc.text(13,33, 'Producto');
+                doc.text(63,33, 'Vlr.Unitario');
+                doc.text(88,33, 'Cant');
+                doc.text(102,33, 'Asignado');
+                doc.text(138,33, 'Estado');
+                doc.text(170,33, 'Desc');
+                doc.text(189,33, 'Valor');
+                //doc.text(5,34,'ID    Producto  Vlr.Unitario    Cant  Asignado   Estado     Desc %      Valor');
                 doc.line(1,35,208, 35); // horizontal line
                 /* posicionamiento */
                 var x=5;
@@ -63,21 +71,28 @@ function Facturar(Id_movimiento){
                 var i = 0;
 
                 datos.forEach(element => {
+                    console.log(element);
+                    let producto = element.Nombre;
+                    let cliente = element.Nombres;
+                    if(producto.length > 20) producto = producto.substr(0,20)+'...';
+                    if(cliente.length > 20) cliente = cliente.substr(0,20)+'...';
                     if(element.EstadoVenta == 'Facturado'){
                         var x=5;
                         doc.text(x,y,""+element.Codigo_pdto);
                         var x=15;
-                        doc.text(x,y,""+element.Nombre);
-                        var x=52;
+                        doc.text(x,y,""+ producto);
+                        var x=70;
                         doc.text(x,y,""+element.VlrUnit);
-                        var x=88;
+                        var x=92;
                         doc.text(x,y,""+element.Cantidad);
-                        var x=110;
-                        doc.text(x,y,""+element.Nombres.substr(0,20)+'...');
-                        var x=153;
+                        var x=103;
+                        doc.text(x,y,""+cliente);
+                        var x=138;
                         doc.text(x,y,""+element.Entregado);
-                        var x=186;
                         /* sumar dos valores */
+                        var x=173;
+                        doc.text(x,y,""+element.porcentaje + ' %');
+                        var x=190;
                         doc.text(x,y,""+element.VlrTotal);
                         total=total+ parseInt(element.VlrTotal) ;
                         y=y+5;

@@ -55,6 +55,7 @@ controladorMovimiento.eliminarDetalle = async (req, resp) => {
         return resp.json({ status: 200 });
     } catch (error) {}
 };
+// ======================================================
 controladorMovimiento.agregarDetalle = async (req, resp) => {
     let cantidadProd = req.body.canProd;
     let valorProd = '';
@@ -64,21 +65,15 @@ controladorMovimiento.agregarDetalle = async (req, resp) => {
     let movimiento = req.body.movimiento;
     let sessionCaro = parseInt(req.body.codCargo);
     let inventario = req.body.id_inventario;
+    let subtotal = req.body.subtotal;
+    let cantidad = req.body.canProd;
 
     if (!inventario || inventario == 'undefined') return console.log(inventario)
     try {
-        let precios = `select id_inventario, aprendiz, instructor, administrativo, externo, auxiliar, stock from lista_productos where id_inventario='${inventario}'`
+        let precios = `select id_inventario, aprendiz, instructor, administrativo, externo, auxiliar, porcentaje, stock from lista_productos where id_inventario='${inventario}'`
         let producto = `SELECT Codigo_pdto, MaxReserva, inventario FROM inventario i join productos p on i.fk_codigo_pdto = Codigo_pdto where id_inventario = '${inventario}';`
         let rows_precio = await query(precios);
         let producto_row = await query(producto);
-        let stock = rows_precio[0].stock;
-
-        if (cantidadProd > stock && producto_row[0].inventario == 'Si') return resp.json({ status: 'error', message: 'Has superado el límite de stock de este producto' })
-        let cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
-        where Id_movimiento = '${movimiento}' and Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${comprador}';`
-        let cantidadPdto_Rows = await query(cantidadPdto);
-        if((parseInt(cantidadPdto_Rows[0].cantidad) + parseInt(cantidadProd)) > parseInt(producto_row[0].MaxReserva)) return resp.json({status: 'error', message: 'Has superado el límite de stock de este producto'});
-        
         switch (sessionCaro) {
             case 1:
                 valorProd = rows_precio[0].aprendiz;
@@ -98,8 +93,24 @@ controladorMovimiento.agregarDetalle = async (req, resp) => {
             default:
                 break;
         }
-        let sql = `insert into detalle(cantidad, valor, Estado, Entregado, fecha, Persona, fk_Id_movimiento, fk_id_inventario)
-        values(${cantidadProd},${valorProd}, '${estadoProd}','${estadoEntr}',now(), ${comprador},${movimiento}, ${inventario})`;
+        let stock = rows_precio[0].stock;
+        let porcentaje = rows_precio[0].porcentaje;
+        subtotal = valorProd * cantidad;
+        console.log(subtotal);
+        if(porcentaje > 0) {
+            descuento = subtotal * (porcentaje/100);
+            subtotal = subtotal - descuento;
+        }
+    
+        if (cantidadProd > stock && producto_row[0].inventario == 'Si') return resp.json({ status: 'error', message: 'Has superado el límite de stock de este producto' })
+        let cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
+        where Id_movimiento = '${movimiento}' and Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${comprador}';`
+        let cantidadPdto_Rows = await query(cantidadPdto);
+        if((parseInt(cantidadPdto_Rows[0].cantidad) + parseInt(cantidadProd)) > parseInt(producto_row[0].MaxReserva)) return resp.json({status: 'error', message: 'Has superado el límite de stock de este producto'});
+        
+       
+        let sql = `insert into detalle(cantidad, valor, Estado, Entregado, fecha, Persona, porcentaje, subtotal, fk_Id_movimiento, fk_id_inventario)
+        values(${cantidadProd},${valorProd}, '${estadoProd}','${estadoEntr}',now(), ${comprador},${porcentaje},${subtotal},${movimiento}, ${inventario})`;
         await query(sql);
         return resp.json({
             status: 200,
@@ -129,7 +140,7 @@ controladorMovimiento.listarMovimientos = async (req, resp) => {
         let sql = `select m.Id_movimiento,date_format(m.Fecha, "%d-%m-%Y") as Fecha , m.Estado,
         (select Nombres from personas where m.fk_persona=personas.identificacion)as personas, 
         m.fk_persona as identificacion,
-        (select sum(valor * cantidad) from detalle where fk_Id_movimiento = m.Id_movimiento) as total, 
+        (select sum(subtotal) from detalle where fk_Id_movimiento = m.Id_movimiento) as total, 
         (SELECT COUNT(*) FROM detalle where m.Id_movimiento = detalle.fk_Id_movimiento) as detalles 
         from movimientos m LEFT JOIN detalle d ON d.fk_Id_movimiento = m.Id_movimiento 
         LEFT JOIN inventario i on i.id_inventario = d.fk_id_inventario 
@@ -146,7 +157,7 @@ controladorMovimiento.mostrarDetalle = async (req, resp) => {
     var id_movimiento = req.params.idmovimiento;
     var sesion_punto = req.session.user.pv;
     let sql = `SELECT Codigo_pdto, id_detalle, producto as Nombre, cantidad as Cantidad, 
-    identificacion, Nombres, valor as VlrUnit, subtotal as VlrTotal, Estado as EstadoVenta, 
+    identificacion, Nombres, valor as VlrUnit, porcentaje, subtotal as VlrTotal, Estado as EstadoVenta, 
     Entregado, num_factura
     FROM listamovimientos where Id_movimiento = '${id_movimiento}' and id_punto_vent = '${sesion_punto}'`;
     try {

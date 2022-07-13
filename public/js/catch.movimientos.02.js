@@ -110,7 +110,6 @@ function listarDetalle (Id_movimiento, tipo){
         let productosMovimiento = [];
         let i = 1;
         data.forEach((producto) => {
-            console.log(producto)
             if (producto.id_detalle == null) return;
             let detalle = '';
             let accion = ' <div class="btn-group" style="width: 100%;">';
