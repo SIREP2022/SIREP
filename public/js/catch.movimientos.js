@@ -2,8 +2,7 @@ $(document).ready(function () {
     $("#modalNewVenta").on("hidden.bs.modal", function () {
         document.getElementById("inputPIdCliente").value = "";
         document.getElementById("nombre").value = "";
-        document.getElementById("tusuario").value = "";
-        document.getElementById("add-prod").innerHTML = "";
+        document.getElementById("cargo-usuario").value = "";
         document.getElementById("id_movimiento").value = "";
     });
 });
@@ -17,107 +16,45 @@ var addProdList = new bootstrap.Modal(document.getElementById("modalAddProd"), {
 
 function addProdVen() {
     //Tabla del modal donde agregaremos los productos a la venta
-    tusuario = document.getElementById('tusuario').value;
+    cargo_usuario = document.getElementById('cargo-usuario').value;
     let datos = new URLSearchParams();
-    datos.append("idcodigo", tusuario);
+    datos.append("cargo", cargo_usuario);
     fetch("/listarProductosPv", {
-        method: "get",
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        }
+        method: "POST",
+        body: datos,
+        headers: {'Authorization': 'Bearer ' + token}
     })
         .then((res) => res.json())
         .then((data) => {
             if (data.status == 401) return console.log(data);
-            for (let i = 0; i < data.length; i++) {
-                let TipoUsuario = parseInt(document.getElementById("tusuario").value);
-                let tableAddprod = document.getElementById("add-prod");
-                let tusuarioDOM;
-
-                switch (TipoUsuario) {
-                    case 1:
-                        tusuarioDOM = data[i].aprendiz;
-                        break;
-                    case 2:
-                        tusuarioDOM = data[i].instructor;
-                        break;
-                    case 3:
-                        tusuarioDOM = data[i].administrativo;
-                        break;
-                    case 4:
-                        tusuarioDOM = data[i].externo;
-                        break;
-                    case 5:
-                        tusuarioDOM = data[i].auxiliar;
-                        break;
-                    default:
-                        break;
+            let json = [];
+            data.forEach(producto => {
+                let array = {
+                    "codigoPdto": producto.id_inventario,
+                    "nombrePdto": producto.Producto,
+                    "precioProd": '$' + producto.precio,
+                    "stockProd": producto.stock,
+                    "btn": `<a class='agregarButton' 
+                    href='javascript:agregar(${producto.id_inventario});'>Agregar</a>`
                 }
-
-                let col1 = document.createElement("tr");
-                let row1 = document.createElement("td");
-                let row2 = document.createElement("td");
-                let row3 = document.createElement("td");
-                let row4 = document.createElement("td");
-                let row5 = document.createElement("td");
-
-                //Textos de los datos de la tabla
-                let codigoPdto = document.createTextNode(data[i].id_inventario);
-                let nombreProd = document.createTextNode(data[i].Producto);
-                let precioProd = document.createTextNode("$ " + tusuarioDOM);
-                let upProd = document.createTextNode(data[i].stock);
-                row5.innerHTML =
-                    "<a class='agregarButton' href='javascript:agregar(" +
-                    data[i].id_inventario +
-                    ");'>Agregar</a>";
-
-
-                //Atributos de los td
-                row1.setAttribute("scope", "row");
-                row1.setAttribute("class", "row1");
-                row2.setAttribute("scope", "row");
-                row3.setAttribute("scope", "row");
-                row4.setAttribute("scope", "row");
-                row5.setAttribute("id", "row5");
-                /* agregar.setAttribute("type", 'button');
-                        agregar.setAttribute("id", 'add-lk');
-                        agregar.setAttribute("class", 'add-lk'); */
-
-                //Padre de los elementos de la tabla
-                tableAddprod.appendChild(col1);
-                col1.appendChild(row1);
-                col1.appendChild(row2);
-                col1.appendChild(row3);
-                col1.appendChild(row4);
-                col1.appendChild(row5);
-                row1.appendChild(codigoPdto);
-                row2.appendChild(nombreProd);
-                row3.appendChild(precioProd);
-                row4.appendChild(upProd);
-            }
-
-
-            setTimeout(() => {
-                $("#tableAddProd").DataTable({
-                    bInfo: false,
-                    destroy: true,
-                    language: {
-                        decimal: ",",
-                        thousands: ".",
-                        lengthMenu: "Mostrar _MENU_ registros",
-                        zeroRecords: "No se encontraron resultados",
-                        infoFiltered: "(filtrado de un total de _MAX_ registros)",
-                        sSearch: "Buscar:",
-                        oPaginate: {
-                            sFirst: "Primero",
-                            sLast: "Último",
-                            sNext: "Siguiente",
-                            sPrevious: "Anterior",
-                        },
-                        sProcessing: "Cargando...",
-                    },
-                });
-            }, 100);
+                json.push(array);
+            });
+            $('#tableAddProd').DataTable({
+                "paging":true,
+                "processing":true,
+                "autoWidth": false,
+                "responsive":true,
+                "destroy":true,
+                "data":json,
+                dom: 'Bfrtip',
+                columns:[
+                    {"data": "codigoPdto"},
+                    {"data": "nombrePdto"},
+                    {"data": "precioProd"},
+                    {"data": "stockProd"},
+                    {"data": "btn"}
+                ]
+            })
         });
 
     addProdList;
@@ -132,149 +69,125 @@ var productoAgregado = new bootstrap.Modal(
 
 function agregar(cod_producto) {
     var datos = new URLSearchParams();
+    let cargo_usuario = parseInt(document.getElementById("cargo-usuario").value);
     datos.append("codigop", cod_producto);
+    datos.append("cargo", cargo_usuario);
     let tabla = document.getElementById("precio_prod");
     tabla.innerHTML = "";
     fetch("/consAddProd", {
         method: "post",
         body: datos,
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        }
+        headers: {'Authorization': 'Bearer ' + token}
     })
         .then((res) => res.json())
         .then((data) => {
             if (data.status == 401) return console.log(data)
-            for (let i = 0; i < data.length; i++) {
-                document.getElementById('id_inventario').value = data[0].id_inventario;
-                let TipoUsuario = parseInt(document.getElementById("tusuario").value);
-                let tusuarioDOM;
+            // AQUI
+            document.getElementById('id_inventario').value = data[0].id_inventario;
+            let precio = data[0].precio;
 
-                switch (TipoUsuario) {
-                    case 1:
-                        tusuarioDOM = data[i].aprendiz;
-                        break;
-                    case 2:
-                        tusuarioDOM = data[i].instructor;
-                        break;
-                    case 3:
-                        tusuarioDOM = data[i].administrativo;
-                        break;
-                    case 4:
-                        tusuarioDOM = data[i].externo;
-                        break;
-                    case 5:
-                        tusuarioDOM = data[i].auxiliar;
-                        break;
-                    default:
-                        break;
-                }
-                /*======Elementos del modulo==== */
-                let labelPregunta = document.createElement('label');
-                let labelNombre = document.createElement("label");
-                let labelprecio = document.createElement("label");
-                let lbDescuento = document.createElement("label");
-                let lbTotal = document.createElement("label");
-                let divsub1 = document.createElement("div");
-                let divsub2 = document.createElement("div");
-                let divsub3 = document.createElement("div");
-                let divsub4 = document.createElement("div");
-                let subdivsub4 = document.createElement("div");
-                let inputCant = document.createElement("input");
+            /*======Elementos del modulo==== */
+            let labelPregunta = document.createElement('label');
+            let labelNombre = document.createElement("label");
+            let labelprecio = document.createElement("label");
+            let lbDescuento = document.createElement("label");
+            let lbTotal = document.createElement("label");
+            let divsub1 = document.createElement("div");
+            let divsub2 = document.createElement("div");
+            let divsub3 = document.createElement("div");
+            let divsub4 = document.createElement("div");
+            let subdivsub4 = document.createElement("div");
+            let inputCant = document.createElement("input");
 
-                let selectEntregado = document.createElement('select');
-                let op1 = document.createElement('option');
-                let op2 = document.createElement('option');
-                let op3 = document.createElement('option');
-                let op1txt = document.createTextNode('Selecciona...');
-                let op2txt = document.createTextNode('No entregado');
-                let op3txt = document.createTextNode('Entregado');
-                let imgProd = document.createElement('img');
-                let preguntaEntrega = document.createTextNode('¿En la venta se va a entregar el producto?');
+            let selectEntregado = document.createElement('select');
+            let op1 = document.createElement('option');
+            let op2 = document.createElement('option');
+            let op3 = document.createElement('option');
+            let op1txt = document.createTextNode('Selecciona...');
+            let op2txt = document.createTextNode('No entregado');
+            let op3txt = document.createTextNode('Entregado');
+            let imgProd = document.createElement('img');
+            let preguntaEntrega = document.createTextNode('¿En la venta se va a entregar el producto?');
 
+            /* =====Atributos de los elementos=====*/
+            divsub1.setAttribute("class", "divsub1");
+            divsub2.setAttribute("class", "divsub2");
+            divsub3.setAttribute("class", "divsub3");
+            divsub4.setAttribute("class", "divsub4");
+            subdivsub4.setAttribute('class', 'sub-div4');
+            inputCant.setAttribute("class", "inputCant");
+            inputCant.setAttribute("id", "inputCant");
+            inputCant.setAttribute("placeholder", "Cantidad...");
+            inputCant.setAttribute("min", "0");
+            inputCant.setAttribute("max", "10");
+            inputCant.setAttribute("type", "number");
+            labelNombre.setAttribute("class", "lbNombre");
+            labelNombre.setAttribute("for", "inputCant");
+            labelprecio.setAttribute("class", "lbPrecio");
+            lbDescuento.setAttribute("class", "lb-descuento")
+            lbTotal.setAttribute("id", "lb-total");
 
+            labelPregunta.setAttribute('class', 'lb-pregunta');
+            selectEntregado.setAttribute('id', 'select-entregado');
+            selectEntregado.setAttribute('class', 'form-select');
+            selectEntregado.setAttribute('onchange', 'ocultarButtonConfirmar()');
+            op1.setAttribute('selected', 'selected');
+            op1.setAttribute('value', '');
+            op2.setAttribute('value', 'No Entregado');
+            op3.setAttribute('value', 'Entregado');
+            imgProd.setAttribute('class', 'img-prod');
+            imgProd.setAttribute('src', 'img/products/' + data[0].imagen);
 
-                /* =====Atributos de los elementos=====*/
-                divsub1.setAttribute("class", "divsub1");
-                divsub2.setAttribute("class", "divsub2");
-                divsub3.setAttribute("class", "divsub3");
-                divsub4.setAttribute("class", "divsub4");
-                subdivsub4.setAttribute('class', 'sub-div4');
-                inputCant.setAttribute("class", "inputCant");
-                inputCant.setAttribute("id", "inputCant");
-                inputCant.setAttribute("placeholder", "Cantidad...");
-                inputCant.setAttribute("min", "0");
-                inputCant.setAttribute("max", "10");
-                inputCant.setAttribute("type", "number");
-                labelNombre.setAttribute("class", "lbNombre");
-                labelNombre.setAttribute("for", "inputCant");
-                labelprecio.setAttribute("class", "lbPrecio");
-                lbDescuento.setAttribute("class", "lb-descuento")
-                lbTotal.setAttribute("id", "lb-total");
-
-                labelPregunta.setAttribute('class', 'lb-pregunta');
-                selectEntregado.setAttribute('id', 'select-entregado');
-                selectEntregado.setAttribute('class', 'form-select');
-                selectEntregado.setAttribute('onchange', 'ocultarButtonConfirmar()');
-                op1.setAttribute('selected', 'selected');
-                op1.setAttribute('value', '');
-                op2.setAttribute('value', 'No Entregado');
-                op3.setAttribute('value', 'Entregado');
-                imgProd.setAttribute('class', 'img-prod');
-                imgProd.setAttribute('src', 'img/products/' + data[i].imagen);
+            /* =====texto nodos======== */
+            let medidaProducto = '';
+            if(data[0].medida) medidaProducto = ' X '+data[0].medida;
+            let texto = document.createTextNode(data[0].Producto + medidaProducto);
+            let texto2 = document.createTextNode("Unidad: $" + precio);
+            let totaltxt = document.createTextNode("Total: $ 0");
+            let porcentaje = data[0].porcentaje;
+            let descuentotxt = document.createTextNode("Descuento: "+porcentaje+"%");
 
 
-                /* =====texto nodos======== */
-                let medidaProducto = '';
-                if(data[i].medida) medidaProducto = ' X '+data[i].medida;
-                let texto = document.createTextNode(data[i].Producto + medidaProducto);
-                let texto2 = document.createTextNode("Unidad: $" + tusuarioDOM);
-                let totaltxt = document.createTextNode("Total: $ 0");
-                let porcentaje = data[i].porcentaje;
-                let descuentotxt = document.createTextNode("Descuento: "+porcentaje+"%");
+            /*=====Hijos de los nodos=====*/
+            tabla.appendChild(divsub1);
+            tabla.appendChild(divsub2);
+            tabla.appendChild(divsub3);
+            tabla.appendChild(divsub4);
+            divsub1.appendChild(labelNombre);
+            divsub2.appendChild(inputCant);
+            divsub2.appendChild(labelprecio);
+            divsub3.appendChild(imgProd);
+            divsub4.appendChild(subdivsub4);
+            subdivsub4.appendChild(lbDescuento);
+            subdivsub4.appendChild(lbTotal);
 
+            divsub4.appendChild(selectEntregado);
+            divsub4.appendChild(labelPregunta);
+            labelPregunta.appendChild(preguntaEntrega);
+            selectEntregado.appendChild(op1);
+            selectEntregado.appendChild(op2);
+            selectEntregado.appendChild(op3);
+            op1.appendChild(op1txt);
+            op2.appendChild(op2txt);
+            op3.appendChild(op3txt);
 
-                /*=====Hijos de los nodos=====*/
-                tabla.appendChild(divsub1);
-                tabla.appendChild(divsub2);
-                tabla.appendChild(divsub3);
-                tabla.appendChild(divsub4);
-                divsub1.appendChild(labelNombre);
-                divsub2.appendChild(inputCant);
-                divsub2.appendChild(labelprecio);
-                divsub3.appendChild(imgProd);
-                divsub4.appendChild(subdivsub4);
-                subdivsub4.appendChild(lbDescuento);
-                subdivsub4.appendChild(lbTotal);
+            lbDescuento.appendChild(descuentotxt);
+            lbTotal.appendChild(totaltxt);
+            labelNombre.appendChild(texto);
+            labelprecio.appendChild(texto2);
+            
 
-                divsub4.appendChild(selectEntregado);
-                divsub4.appendChild(labelPregunta);
-                labelPregunta.appendChild(preguntaEntrega);
-                selectEntregado.appendChild(op1);
-                selectEntregado.appendChild(op2);
-                selectEntregado.appendChild(op3);
-                op1.appendChild(op1txt);
-                op2.appendChild(op2txt);
-                op3.appendChild(op3txt);
-
-                lbDescuento.appendChild(descuentotxt);
-                lbTotal.appendChild(totaltxt);
-                labelNombre.appendChild(texto);
-                labelprecio.appendChild(texto2);
-               
-
-                /*Auto multiplicacion de la cantidad de producto*/
-                inputCant.addEventListener("change", sumar);
-                inputCant.addEventListener("keyup", sumar);
-                function sumar() {
-                    let cantVlr = tusuarioDOM;
-                    let cantProd = document.getElementById("inputCant").value;
-                    if (!cantProd) cantProd = 0;
-                    var descuento = (parseFloat(cantVlr) * (data[0].porcentaje/100)) * parseFloat(cantProd);
-                    var total = (parseFloat(cantVlr) * parseFloat(cantProd)) - descuento;
-                    document.getElementById("lb-total").innerHTML = "Total: $ " + total;
-                    return total;
-                }
+            /*Auto multiplicacion de la cantidad de producto*/
+            inputCant.addEventListener("change", sumar);
+            inputCant.addEventListener("keyup", sumar);
+            function sumar() {
+                let cantVlr = precio;
+                let cantProd = document.getElementById("inputCant").value;
+                if (!cantProd) cantProd = 0;
+                var descuento = (parseFloat(cantVlr) * (data[0].porcentaje/100)) * parseFloat(cantProd);
+                var total = (parseFloat(cantVlr) * parseFloat(cantProd)) - descuento;
+                document.getElementById("lb-total").innerHTML = "Total: $ " + total;
+                return total;
             }
         });
     productoAgregado.toggle();
@@ -311,9 +224,7 @@ function buscarUser() {
     fetch("/filtro", {
         method: "post",
         body: datos,
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        }
+        headers: {'Authorization': 'Bearer ' + token}
     })
         .then((res) => res.json())
         .then((data) => {
@@ -321,6 +232,7 @@ function buscarUser() {
             // AQUÍ LANZA EL MODAL PARA CREAR USUARIO============================
             if (data.length <= 0) {
                 document.getElementById("nombre").value = "Usuario no registrado.";
+                document.getElementById("nombre").value = "Cargo.";
                 registroCliente();
                 let btnProductos = document.getElementById("boton_agregar_productos");
                 btnProductos.disabled = true;
@@ -330,9 +242,12 @@ function buscarUser() {
             /* ====VARIABLES===== */
             var identificacion = data[0].identificacion;
             var nombre = data[0].Nombres;
-            var tusuario = data[0].Cargo;
+            var cargo_usuario = data[0].Cargo;
+            console.log(data[0]);
+            var nombre_cargo = data[0].nombre_cargo;
             if (identificacion != iden) {
                 document.getElementById("nombre").value = "Usuario no registrado.";
+                document.getElementById("nombre").value = "Cargo";
                 document.getElementById("genVenDiv").innerHTML =
                     '<input type="button" class="btn btn-primary btndone" onclick="" value="Registrar Usuario?">';
                 $("#tableAddProd").DataTable({
@@ -341,7 +256,8 @@ function buscarUser() {
                 });
             } else if (identificacion == iden) {
                 document.getElementById("nombre").value = nombre;
-                document.getElementById("tusuario").value = tusuario;
+                document.getElementById("cargo_nombre").value = nombre_cargo;
+                document.getElementById("cargo-usuario").value = cargo_usuario;
                 document.getElementById('divBtnAdd').innerHTML = '<input type="button" id="boton_agregar_productos" class="btn btn-primary btnadd" onclick="addProdVen();" value="Agregar Productos" />';
 
             }
@@ -508,9 +424,7 @@ function Factura(id_detalle) {
 function finalizarCompra() {
     fetch("/endCompra", {
         method: 'post',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        }
+        headers: {'Authorization': 'Bearer ' + token}
     }).then(res => res.json())
         .then(data => {
             console.log(data)
@@ -522,7 +436,7 @@ function AregarProductoCliente() {
     let comprador = document.getElementById('inputPIdCliente').value;
     let movimiento = document.getElementById('id_movimiento').value;
     let inventario = document.getElementById('id_inventario').value;
-    let cargoCod = document.getElementById('tusuario').value;
+    let cargoCod = document.getElementById('cargo-usuario').value;
     let estadoEntrega = document.getElementById('select-entregado').value;
     var datos = new URLSearchParams();
     datos.append('estadoEntega', estadoEntrega);
@@ -553,48 +467,46 @@ function AregarProductoCliente() {
         }).catch(e => console.log(e))
 }
 var infoProductosPrecio = new bootstrap.Modal(document.getElementById("modalInfoProd"), { keyboard: false, });
+
 document.getElementById('ver-precios').addEventListener('click', (e) => {
-    fetch('/listarPrecioProductos', {
+    fetch('/listarProductosVenta', {
         method: 'get',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        }
+        headers: {'Authorization': 'Bearer ' + token}
     }).then(res => res.json())
         .then(data => {
-            if (data.status == 401) return console.log(data)
-            let infoProductos = []
-            let arrayProducto = {}
-            data.forEach(element => {
-                arrayProducto = {
-                    'codigo': element.codigo,
-                    'nombre': element.Producto,
-                    'stock': element.stock,
-                    'aprendiz': element.aprendiz,
-                    'instructor': element.instructor,
-                    'admin': element.administrativo,
-                    'externo': element.externo,
-                    'auxiliar': element.auxiliar,
-                    'estado': element.estado,
-                };
-                infoProductos.push(arrayProducto);
-
-                $("#tableInfoProducto").DataTable({
-                    destroy: true,
-                    autoWidth: false,
-                    data: infoProductos,
-                    dom: 'Bfrtip',
-                    columns: [
-                        { data: "codigo" },
-                        { data: "nombre" },
-                        { data: "stock" },
-                        { data: "aprendiz" },
-                        { data: "instructor" },
-                        { data: "admin" },
-                        { data: "externo" },
-                        { data: "auxiliar" },
-                        { data: "estado" },
-                    ],
-                });
+            if (data.status == 401) return console.log(data);
+            let array = [];
+            data.forEach(producto => {
+                let precios = '<ul style="text-align: left;">';
+                producto.precio.split('|').forEach(element => {
+                    if(!element.replace(',', '')) return;
+                    precios += `<li>${element.replace(',', '')}</li>`
+                })
+                precios += '</ul>';
+                
+                let json = {
+                    codigo: producto.codigo,
+                    Producto: producto.Producto,
+                    stock: producto.stock,
+                    estado: producto.estado,
+                    precio: precios
+                }
+                
+                array.push(json);
+            });
+            
+            $("#tableInfoProducto").DataTable({
+                destroy: true,
+                autoWidth: false,
+                data: array,
+                dom: 'Bfrtip',
+                columns: [
+                    { data: "codigo" },
+                    { data: "Producto" },
+                    { data: "stock" },
+                    { data: "estado" },
+                    { data: "precio" },
+                ],
             });
         }).catch((e) => console.log(e));
     infoProductosPrecio.toggle();

@@ -44,7 +44,7 @@
                 <li><a href="/entregar-producto"><span class="icon-suitcase"></span>Entregar Producto</a></li>
                 <%} %>
                 <%if (profile.Rol == 'Punto Venta' && profile.pv_nombre) { %>
-                <li><a href="/venta"><span class="icon-suitcase"></span>Venta</a></li>
+                <li><a href="/venta"><span class="icon-suitcase"></span>Facturar</a></li>
                 <%} %> 
                 <%if (profile.Rol.trim() == 'Admin' || 
                 (profile.Rol == 'Lider UP' && profile.up_nombre) || 

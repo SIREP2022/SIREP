@@ -135,7 +135,7 @@
                   <h1>Formulario de Venta</h1>
 
                   <div class="col-md-10">
-                    <input type="hidden" id="tusuario" />
+                    <input type="hidden" id="cargo-usuario" />
                     <label for="inputPIdCliente" class="form-label">Documento del Cliente</label>
                     <input type="number" class="form-control input-style" id="inputPIdCliente" />
                   </div>
@@ -146,6 +146,7 @@
                   <div class="col-12">
                     <label for="inputAddress" class="form-label">Nom. Cliente</label>
                     <input class="form-control input-style" type="text" id="nombre" disabled />
+                    <input class="form-control input-style mt-2" type="text" id="cargo_nombre" value="Cargo" disabled />
                   </div>
                 </div>
               </div>
@@ -167,7 +168,7 @@
           </div>
           <div class="modal-body">
             <div class="table-prods">
-              <table class="display dt-table-cart table-striped" id="tableAddProd">
+              <table class=" display dt-table-cart table-striped" id="tableAddProd">
                 <thead>
                   <tr>
                     <th>ID. Prod</th>
@@ -177,7 +178,7 @@
                     <th>Acciones</th>
                   </tr>
                 </thead>
-                <tbody id="add-prod"></tbody>
+                <tbody></tbody>
               </table>
             </div>
           </div>
@@ -225,12 +226,8 @@
                     <th>Codigo</th>
                     <th>Nombre del Producto</th>
                     <th>Stock</th>
-                    <th>Aprendices</th>
-                    <th>Instructores</th>
-                    <th>Administrativos</th>
-                    <th>Externos</th>
-                    <th>Auxiliares</th>
                     <th>Estado</th>
+                    <th>Acción</th>
                   </tr>
                 </thead>
                 <tbody></tbody>

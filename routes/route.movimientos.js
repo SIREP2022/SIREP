@@ -5,13 +5,14 @@ const auth = require('../middlewares/middleware.auth');
 
 routeMovimientos.get('/venta', auth.authRoute, contMovimientos.renderMovimientos);
 routeMovimientos.get('/listarMovimientos', auth.authToken,  contMovimientos.listarMovimientos);
-routeMovimientos.get('/listarProductosPv', auth.authToken,  contMovimientos.listarProductos);
+routeMovimientos.post('/listarProductosPv', auth.authToken,  contMovimientos.listarProductos);
 routeMovimientos.post('/consAddProd', auth.authToken,  contMovimientos.consAggProd);
 routeMovimientos.post('/filtro', auth.authToken,  contMovimientos.filtro);
 routeMovimientos.post('/genventa', auth.authToken,  contMovimientos.genVenta);
 routeMovimientos.post('/agregarDetalle', auth.authToken,  contMovimientos.agregarDetalle);
 routeMovimientos.post('/eliminarDetalle', auth.authToken,  contMovimientos.eliminarDetalle);
 routeMovimientos.get('/listarPrecioProductos', auth.authToken,  contMovimientos.listarPreciosProductos);
+routeMovimientos.get('/listarProductosVenta', auth.authToken,  contMovimientos.listarProductosVenta);
 
 /* ==============segunda parte ===== */
 routeMovimientos.get('/listarDetalle/:idmovimiento', auth.authToken,  contMovimientos.mostrarDetalle);

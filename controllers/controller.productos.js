@@ -19,10 +19,13 @@ controlador.CargarImagen = upload.single("img");
 
 controlador.Vista = async(req, res) => {
     try {
-        let sql = "select * from unidades_productivas";
-        let rows = await query(sql);
+        let ups = "select * from unidades_productivas";
+        let cargos = "select * from cargo";
+        let rows_ups = await query(ups);
+        let rows_cargos = await query(cargos);
         res.render("admin/productos", {
-            Unidadesproductivas: rows,
+            Unidadesproductivas: rows_ups,
+            Cargos: rows_cargos,
             profile: req.session.user,
         });
     } catch (e) {

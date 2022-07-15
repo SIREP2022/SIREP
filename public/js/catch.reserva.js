@@ -1,4 +1,5 @@
 const input = document.getElementById('buscar');
+
 //GUARDA GLOBAL
 var lista_Productos = [];
 var producto_Select = [];
@@ -29,6 +30,20 @@ input.addEventListener('keyup', e => {
 
 });
 
+function Listar_todos_Productos() {
+    fetch('/ListarTodosProductos', {
+        method: 'get',
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status == 401) return data;
+        // GUARDA LA INFOR EN LA VARIABLE
+        this.lista_Productos = data;
+        Render_Productos(data);
+    });
+}
+
 function Render_Productos(data) {
     let fecha = new Date();
     let hour = fecha.getHours();
@@ -42,46 +57,50 @@ function Render_Productos(data) {
     data.forEach(lista => {
         let medidaP = '';
         var descuento = (parseFloat(lista.precio) * (lista.porcentaje/100));
+        let reservados = 0;
+        if(lista.reservados) reservados = lista.reservados;
         if (lista.medidas) medidaP = ' - ' + lista.medidas;
+        // INFO CARDS
+        let precio_info = '';
+        let descuento_info = '';
+        let stock_info = ''
+        let up_info = ''
+        if (lista.tipo == 'Venta') {
+            if(lista.promocion == 'No'){
+                precio_info = `<p class='card-text'><label class='info_pdto'>Precio: </label>$ ${lista.precio} </p>`;
+            }
+            else if(lista.promocion == 'Si'){
+                precio_info = `<p class='card-text'><label class='info_pdto'>Precio:</label><span class='info-descuento'>$ ${lista.precio}</span> - $ ${(lista.precio)-descuento}</p>`;
+                descuento_info = `<p class='card-text'><label class='info_pdto'>Descuento: <span class='info_pdto_d'>${lista.porcentaje}%</span></label> </p>`;
+            }
+            stock_info = `<p class="card-text" id="precio"><label class="info_pdto">Stock: </label>${lista.stock} unidades / ${reservados} reservados </p>`
+            up_info = `<p class="card-text"><label class="info_pdto">UP: </label> ${lista.up}</p>`;
+            if(lista.control_inventario == 'No'){
+                stock_info = `<p class="card-text" id="precio"><label class="info_pdto">Reservados:</label> ${reservados}</p>`;
+            }
+        }
+        if(lista.tipo == 'Servicio') {
+            stock_info = `<p class="card-text" id="precio"><label class="info_pdto">Stock: </label>${lista.stock} unidades</p>`;
+        }
         card_product +=
             `<div class='card text-black bg-white mb-3 m-2'>
             <div class='card-header'>
                 ${lista.producto}
             </div>
-                        <div class='card-body'>
-                            <div style='height: 120px; display:flex; justify-content: center; align-content: center'>
-                                <img style="width: auto; height: 100%;" src='img/products/${lista.imagen} 'class='card-img-top'  width='80px' height='150px'>
-                            </div>
-                            <h5 class='card-title'>${lista.descripcion} ${medidaP} </h5>`;
-        if (lista.tipo == 'Venta' && lista.promocion == 'No') {
-            card_product += ` <div>
-                        <p class='card-text'><label class='info_pdto'>Tipo Producto: </label>Para ${lista.tipo} </p>
-                        <p class='card-text'><label class='info_pdto'>Precio: </label>$ ${lista.precio} </p>
-                        <p class="card-text" id="precio"><label class="info_pdto">Stock: </label>${lista.stock} unidades</p>
-                        <p class="card-text"><label class="info_pdto">UP: </label> ${lista.up}</p>
-                        <p class="card-text"><label class="info_pdto">Sitio de Venta : </label> ${lista.pv} </p>
-                    
-                            </div>`;
-        } else if(lista.tipo == 'Venta' && lista.promocion =='Si'){
-                        card_product += ` <div>
-                        <p class='card-text'><label class='info_pdto'>Tipo Producto: </label>Para ${lista.tipo} </p>
-                        <p class='card-text'><label class='info_pdto'>Precio:</label><span class='info-descuento'>$ ${lista.precio}</span> - $ ${(lista.precio)-descuento}</p>
-                        <p class='card-text'><label class='info_pdto'>Descuento: <span class='info_pdto_d'>${lista.porcentaje}%</span></label> </p>
-                        <p class="card-text" id="precio"><label class="info_pdto">Stock: </label>${lista.stock} unidades</p>
-                        <p class="card-text"><label class="info_pdto">UP: </label> ${lista.up}</p>
-                        <p class="card-text"><label class="info_pdto">Sitio de Venta : </label> ${lista.pv} </p>
-                    
-                            </div>`;
-
-        } else if(lista.tipo == 'Servicio') {
-            card_product += ` <div>
-                        <p class='card-text'><label class='info_pdto'>Tipo Producto: </label>Para ${lista.tipo} </p>
-                        <p class="card-text" id="precio"><label class="info_pdto">Stock: </label>${lista.stock} unidades</p>
-                        <p class="card-text"><label class="info_pdto">Sitio: </label> ${lista.up}</p>
-                            </div>`;
-        }
-
-        card_product += `</div> `;
+            <div class='card-body'>
+                <div style='height: 120px; display:flex; justify-content: center; align-content: center'>
+                    <img style="width: auto; height: 100%;" src='img/products/${lista.imagen} 'class='card-img-top'  width='80px' height='150px'>
+                </div>
+                <h5 class='card-title'>${lista.descripcion} ${medidaP} </h5>
+                <div>
+                <p class='card-text'><label class='info_pdto'>Tipo Producto: </label>Para ${lista.tipo} </p>
+                ${precio_info}
+                ${descuento_info}
+                ${stock_info}
+                ${up_info}
+                <p class="card-text"><label class="info_pdto">Sitio: </label> ${lista.up}</p>
+            </div>
+            </div> `;
         if (!lista.MaxReserva) lista.MaxReserva = lista.maxreserva;
         if (lista.reserva == 'Si' && (timeHour >= lista.hora_inicio)) {
             if (timeHour >= lista.hora_inicio && timeHour >= lista.hora_fin) {
@@ -92,7 +111,8 @@ function Render_Productos(data) {
                 card_product += `<div class='card-footer'>
                             <a class='btn btn-primary'
                             href="javascript:Abrir_Frm_Reserva('${lista.producto}',
-                            '${lista.id_inventario}', '${lista.precio-descuento}', '${lista.MaxReserva}');">
+                            '${lista.id_inventario}', '${lista.precio-descuento}','${lista.stock}', '${lista.MaxReserva}', 
+                            '${lista.reservados}', '${lista.control_inventario}');">
                             Reservar</a>
                             </div>`;
             }
@@ -106,61 +126,24 @@ function Render_Productos(data) {
 
 }
 
-function Listar_todos_Productos() {
-    fetch('/ListarTodosProductos', {
-        method: 'get',
-        headers: { 'Authorization': 'Bearer ' + token }
-    })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status == 401) return data;
-            // GUARDA LA INFOR EN LA VARIABLE
-            this.lista_Productos = data;
-            Render_Productos(data);
-        });
 
-
-
-}
-
-function eliminarDetalle(id) {
-    var datos = new URLSearchParams();
-    datos.append('id_detalle', id);
-    fetch('/Eliminar_Detalle', {
-        method: 'post',
-        body: datos,
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
-    }).then(res => res.json())
-        .then(data => {
-            if (data.status == 401) return console.log(data);
-            /* Swal.fire({
-                title: data.titulo,
-                icon: data.icon,
-                text:data.text,
-                timer: 1500
-            }) */
-            Listar_Reservas_Pendientes()
-
-        })
-}
 /* ================================= */
 var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
     keyboard: false
 });
 /* ========FUNCION ABRIR============= */
-function Abrir_Frm_Reserva(nombre, id, precio, maxReserva) {
+function Abrir_Frm_Reserva(nombre, id, precio, stock, maxReserva, reservados, control_inventario) {
+    if(!reservados || reservados == null) reservados = 0;
     document.getElementById('name').innerHTML = nombre;
     document.getElementById('cod_prod').value = id;
     document.getElementById('precio_pdto').value = precio;
     document.getElementById('maxReserva').value = maxReserva;
+    document.getElementById('reservados').value = reservados;
+    document.getElementById('control_inventario').value = control_inventario;
+    document.getElementById('stockProd').value = stock;
     document.getElementById('total').innerHTML = '$ ' + precio;
     document.getElementById('subtotal').value = precio;
-
     let ficha = document.getElementById('ficha').value;
-    var datos = new URLSearchParams(); // que hace este codigo ??
-    datos.append('cod_prod', id); // que hace este codigo ??
 
 
     Listar_Reservas_Pendientes(); // se lista las reserva pendiente
@@ -228,8 +211,18 @@ function RegistrarDetalle() {
     let id_movimiento = document.getElementById('id_movimiento_header').value;
     let tipo_res = document.getElementById('tipo_res').value;
     let subtotal = document.getElementById('subtotal').value;
-
-
+    let reservados = document.getElementById('reservados').value;
+    let stock = document.getElementById('stockProd').value;
+    let control_inventario = document.getElementById('control_inventario').value;
+    if(reservados == 'null') reservados = 0;
+    if((parseInt(reservados) + parseInt(cantidad)) > parseInt(stock) && control_inventario == 'Si') {
+        return Swal.fire({
+            title: 'No hay reservas',
+            icon: 'error',
+            text: 'No hay stock disponible, fueron reservados.',
+            timer: 1500
+        })
+    }
     /* ======================= */
     var datos = new URLSearchParams();
     datos.append('cantidad', cantidad);
@@ -245,7 +238,7 @@ function RegistrarDetalle() {
         let persona = document.getElementById('ident').value;
         datos.append('persona', persona);
     }
-
+    
     fetch('/Registrar_Detalle', {
         method: 'post',
         body: datos,
@@ -260,6 +253,7 @@ function RegistrarDetalle() {
                 text: data.text,
                 timer: 1500
             })
+            Listar_todos_Productos();
             Listar_Reservas_Pendientes();
         })
     let cantistock = document.getElementById('cantidad').innerHTML = 1;

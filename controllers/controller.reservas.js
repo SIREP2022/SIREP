@@ -5,24 +5,13 @@ const controlador = {};
 controlador.Listar_Todos_Productos = async(req, res) => {
     var sesion_Cargo = req.session.user.id_cargo;
     //He agregado los campos 'medida', 'tipoempaque' para mostrar
-    let sql = 'select id_inventario,Producto as producto,descripcion,tipo,imagen,reserva,stock,MaxReserva, hora_inicio, hora_fin, nomb_up as up, medidas, promocion, porcentaje,';
-    if (sesion_Cargo == 1) {
-        sql += `aprendiz as precio,Nombre as pv    from lista_productos order by Producto   `;
-    }
-    if (sesion_Cargo == 2) {
-        sql += `instructor as precio,Nombre as pv    from lista_productos order by Producto `;
-    }
-    if (sesion_Cargo == 3) {
-        sql += `administrativo as precio,Nombre as pv    from lista_productos order by Producto  `;
-    }
-    if (sesion_Cargo == 4) {
-        sql += `externo as precio,Nombre as pv    from lista_productos order by Producto `;
-    }
-
-    if (sesion_Cargo == 5) {
-        sql += `auxiliares as precio,Nombre as pv    from lista_productos  `;
-    }
-
+    let sql = `select id_inventario,Producto as producto,descripcion,tipo,imagen,
+    reserva,stock,MaxReserva, hora_inicio, hora_fin, nomb_up as up, medidas, control_inventario,
+    promocion, porcentaje, precio, Nombre as pv,
+    (SELECT SUM(cantidad) FROM detalle d WHERE d.fk_id_inventario = id_inventario and d.estado = 'Reservado') as reservados
+    from lista_productos 
+    where idcargo = ${sesion_Cargo} order by Producto` ;
+    
     try {
         let productos = await query(sql);
         res.json(productos);
@@ -71,42 +60,40 @@ controlador.Registrar_Detalle = async(req, res) => {
     var movimiento = req.body.id_movimiento;
     var inventario = req.body.id_producto;
     var subtotal = req.body.subtotal;
-    let porcentajedb = `select porcentaje from lista_productos where id_inventario ='${inventario}' LIMIT 1;`;
-
-    if (sesion_Cargo == 1) {
-        sql = `select aprendiz as precio from lista_productos where id_inventario = '${inventario}' LIMIT 1;`;
-    }
-    if (sesion_Cargo == 2) {
-        sql = `select instructor as precio from lista_productos where id_inventario = '${inventario}' LIMIT 1;`;
-    }
-    if (sesion_Cargo == 3) {
-        sql = `select administrativo as precio from lista_productos where id_inventario = '${inventario}' LIMIT 1;`;
-    }
-    if (sesion_Cargo == 4) {
-        sql = `select externo as as precio from lista_productos where id_inventario = '${inventario}' LIMIT 1;`;
-    }
-
-    if (sesion_Cargo == 5) {
-        sql = `select auxiliar as precio from lista_productos where id_inventario = '${inventario}' LIMIT 1;`;
-    }
-    let producto = `SELECT Codigo_pdto, MaxReserva, inventario FROM inventario i join productos p on i.fk_codigo_pdto = Codigo_pdto where id_inventario = '${inventario}';`
-    let producto_row = await query(producto);
-    if (producto_row[0].MaxReserva < cantidad) return res.json({
-        titulo: "Reserva superada",
-        icon: "error",
-        text: "Has superado el límite máximo de reserva"
-    });
-    let cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
-    where Id_movimiento = '${movimiento}' and Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${persona}';`
-    let cantidadPdto_Rows = await query(cantidadPdto);
-    if ((parseInt(cantidadPdto_Rows[0].cantidad) + parseInt(cantidad)) > parseInt(producto_row[0].MaxReserva)) return res.json({
-        titulo: "Reserva superada",
-        icon: "error",
-        text: "Has superado el límite máximo de reserva"
-    });
     try {
+        let sql = `SELECT precio, control_inventario, stock,
+        (SELECT SUM(cantidad) FROM detalle d WHERE d.fk_id_inventario = id_inventario and d.estado = 'Reservado') as reservados 
+        from lista_productos where id_inventario = '${inventario}' and idcargo = ${sesion_Cargo}  LIMIT 1;`;
+        let porcentajedb = `select porcentaje from lista_productos where id_inventario ='${inventario}' LIMIT 1;`;
         let rows = await query(sql);
         let rows2 = await query(porcentajedb);
+        
+        let producto = `SELECT Codigo_pdto, MaxReserva, inventario FROM inventario i join productos p on i.fk_codigo_pdto = Codigo_pdto where id_inventario = '${inventario}';`
+        let producto_row = await query(producto);
+        if (producto_row[0].MaxReserva < cantidad) return res.json({
+            titulo: "Reserva superada",
+            icon: "error",
+            text: "Has superado el límite máximo de reserva"
+        });
+        if((parseInt(rows[0].reservados) + parseInt(cantidad))  > rows[0].stock && rows[0].control_inventario == 'Si'){
+            return res.json({
+                titulo: "Reserva superada",
+                icon: "error",
+                text: "Ya no hay stock disponible del producto"
+            });
+        }
+        
+
+        let cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
+        where Id_movimiento = '${movimiento}' and Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${persona}';`
+        let cantidadPdto_Rows = await query(cantidadPdto);
+        if ((parseInt(cantidadPdto_Rows[0].cantidad) + parseInt(cantidad)) > parseInt(producto_row[0].MaxReserva)) return res.json({
+            titulo: "Reserva superada",
+            icon: "error",
+            text: "Has superado el límite máximo de reserva"
+        });
+    
+        
         var precioProducto = rows[0].precio;
         if(!subtotal) subtotal = precioProducto * cantidad;
         var porcentajeProducto = rows2[0].porcentaje;

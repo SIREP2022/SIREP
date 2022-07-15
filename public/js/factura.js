@@ -57,7 +57,7 @@ function Facturar(Id_movimiento){
                 doc.text(63,33, 'Vlr.Unitario');
                 doc.text(88,33, 'Cant');
                 doc.text(102,33, 'Asignado');
-                doc.text(138,33, 'Estado');
+                doc.text(140,33, 'Estado');
                 doc.text(170,33, 'Desc');
                 doc.text(189,33, 'Valor');
                 //doc.text(5,34,'ID    Producto  Vlr.Unitario    Cant  Asignado   Estado     Desc %      Valor');
@@ -87,7 +87,7 @@ function Facturar(Id_movimiento){
                         doc.text(x,y,""+element.Cantidad);
                         var x=103;
                         doc.text(x,y,""+cliente);
-                        var x=138;
+                        var x=140;
                         doc.text(x,y,""+element.Entregado);
                         /* sumar dos valores */
                         var x=173;

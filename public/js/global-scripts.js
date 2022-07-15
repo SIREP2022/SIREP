@@ -1,4 +1,6 @@
 let token = localStorage.getItem('token');
+var url = location.pathname;
+
 const currency = function(number){
     return new Intl.NumberFormat('em-IN').format(number);
 };
@@ -102,6 +104,7 @@ function eliminarDetalle(id){
         }
     }).then(res => res.json())
     .then(data => {
+        
         if(data.status == 401) return console.log(data);
         Swal.fire({
             title: data.titulo,
@@ -109,6 +112,7 @@ function eliminarDetalle(id){
             text:data.text,
             timer: 1500
         })
+        if(url == '/admin') Listar_todos_Productos();
         Listar_Reservas_Pendientes()
   
     })

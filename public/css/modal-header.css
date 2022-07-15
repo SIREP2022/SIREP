@@ -137,6 +137,7 @@
     display: flex;
     margin: 5px 0;
     justify-content:center;
+    text-align: center;
 }
 .profile-box > .profile-section .logout-profile {
     width: 60%;

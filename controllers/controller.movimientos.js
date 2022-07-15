@@ -7,8 +7,9 @@ controladorMovimiento.renderMovimientos = async (req, resp) => {
 };
 controladorMovimiento.listarProductos = async (req, resp) => {
     try {
+        let cargo = req.body.cargo;
         let sesion_pv = req.session.user.pv;
-        let sql = `select * from lista_productos where Id_punto_vent  = ${sesion_pv}`;
+        let sql = `select * from lista_productos where Id_punto_vent  = '${sesion_pv}' and idcargo = '${cargo}'`;
         let rows = await query(sql);
         resp.json(rows);
     } catch (error) {
@@ -18,8 +19,9 @@ controladorMovimiento.listarProductos = async (req, resp) => {
 /* =================controlador agregar================ */
 controladorMovimiento.consAggProd = async (req, resp) => {
     var id = req.body.codigop;
+    var cargo = req.body.cargo;
     try {
-        let sql = `select * from lista_productos where id_inventario=` + id;
+        let sql = `select * from lista_productos where id_inventario='${id}' and idcargo = '${cargo}'`;
         let rows = await query(sql);
         return resp.json(rows);
     } catch (error) {
@@ -30,7 +32,9 @@ controladorMovimiento.consAggProd = async (req, resp) => {
 controladorMovimiento.filtro = async (req, resp) => {
     var iden = req.body.iden;
     try {
-        let sql = "SELECT identificacion, Cargo,Nombres FROM `personas` WHERE identificacion=" + iden;
+        let sql = `SELECT identificacion, Cargo,Nombres, c.nombre_cargo FROM personas p
+        JOIN cargo c on c.idcargo = p.Cargo
+        WHERE identificacion = ${iden}`;
         let rows = await query(sql);
         return resp.json(rows);
     } catch (error) {
@@ -58,41 +62,22 @@ controladorMovimiento.eliminarDetalle = async (req, resp) => {
 // ======================================================
 controladorMovimiento.agregarDetalle = async (req, resp) => {
     let cantidadProd = req.body.canProd;
-    let valorProd = '';
     let estadoEntr = req.body.estadoEntega;
     let estadoProd = "Reservado";
     let comprador = req.body.comprador;
     let movimiento = req.body.movimiento;
-    let sessionCaro = parseInt(req.body.codCargo);
     let inventario = req.body.id_inventario;
     let subtotal = req.body.subtotal;
     let cantidad = req.body.canProd;
+    let cargo = req.body.codCargo;
 
     if (!inventario || inventario == 'undefined') return console.log(inventario)
     try {
-        let precios = `select id_inventario, aprendiz, instructor, administrativo, externo, auxiliar, porcentaje, stock from lista_productos where id_inventario='${inventario}'`
+        let precios = `select id_inventario, precio, porcentaje, stock from lista_productos where id_inventario='${inventario}' and idcargo = '${cargo}'`
         let producto = `SELECT Codigo_pdto, MaxReserva, inventario FROM inventario i join productos p on i.fk_codigo_pdto = Codigo_pdto where id_inventario = '${inventario}';`
         let rows_precio = await query(precios);
         let producto_row = await query(producto);
-        switch (sessionCaro) {
-            case 1:
-                valorProd = rows_precio[0].aprendiz;
-                break;
-            case 2:
-                valorProd = rows_precio[0].instructor;
-                break;
-            case 3:
-                valorProd = rows_precio[0].administrativo;
-                break;
-            case 4:
-                valorProd = rows_precio[0].externo;
-                break;
-            case 5:
-                valorProd = rows_precio[0].auxiliar;
-                break;
-            default:
-                break;
-        }
+        let valorProd = rows_precio[0].precio;
         let stock = rows_precio[0].stock;
         let porcentaje = rows_precio[0].porcentaje;
         subtotal = valorProd * cantidad;
@@ -123,8 +108,22 @@ controladorMovimiento.agregarDetalle = async (req, resp) => {
 controladorMovimiento.listarPreciosProductos = async (req, resp) => {
     let sesion_pv = req.session.user.pv;
     let sql = `select id_inventario as codigo, 
-    Producto, stock, aprendiz, estado, instructor, administrativo,externo, auxiliar 
-    from lista_productos where Id_punto_vent = '${sesion_pv}' and tipo = 'venta';`;
+    Producto, stock, estado from lista_productos 
+    where Id_punto_vent = '${sesion_pv}' and tipo = 'venta';`;
+    try {
+        let rows = await query(sql);
+        resp.json(rows);
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+controladorMovimiento.listarProductosVenta = async (req, resp) => {
+    let sesion_pv = req.session.user.pv;
+    let sql = `select id_inventario as codigo, 
+    GROUP_CONCAT(nombre_cargo, ': $', precio, '|') as precio, Producto, 
+    stock, estado from lista_productos where Id_punto_vent = '${sesion_pv}' and tipo = 'venta' 
+    GROUP BY id_inventario;`;
     try {
         let rows = await query(sql);
         resp.json(rows);
