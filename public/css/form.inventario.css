@@ -28,9 +28,6 @@ input[type="text"]:disabled, input[type="number"]:disabled, .cantidad-invent{
 thead > tr{
     text-align: center;
 }
-table.dataTable td{
-    padding: 0.8em;
-}
 tbody > tr{
     text-align: center;
 }

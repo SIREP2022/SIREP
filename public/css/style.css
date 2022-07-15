@@ -685,7 +685,7 @@ select {
 		padding: 35px 20px;
 	}
 	.body-info-section{
-		padding:0;
+		padding: 5px 10px;
 	}
 	.item-list{
 		grid-template-columns: repeat(2, 1fr);

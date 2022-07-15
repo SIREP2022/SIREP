@@ -27,7 +27,7 @@ function Facturar(Id_movimiento){
                 /* var logo = new Image();
                 var logo2 = new Image(); */
                 
-                doc.rect(1,1, 208, 120); // empty square
+                doc.rect(1,6, 208, 120); // empty square
                 /* =====logos================= */
                 /* logo.src = 'img/logos/logosena.png';
                     doc.addImage(logo, 'JPG', 8, 3, 20, 12);
@@ -35,9 +35,9 @@ function Facturar(Id_movimiento){
                 doc.addImage(logo2, 'JPG', 165, 3, 36, 12); */
                 /* ===contenido==== */ 
                 doc.setFontSize(14);
-                doc.text(33,6,'Centro de Gestion y Desarrollo Sostenible Surcolombiano');
+                doc.text(33, 11,'Centro de Gestion y Desarrollo Sostenible Surcolombiano');
                 doc.setFontSize(12);
-                doc.text(80,12,'Sena Empresa');
+                doc.text(80, 15,'Sena Empresa');
                 /* =====pasar a string====== */
                 doc.setFontSize(12);
                 doc.text(10,20,'Identificacion');
@@ -48,7 +48,7 @@ function Facturar(Id_movimiento){
                 doc.setFontSize(12);
                 doc.text(40,26, datos[0].Nombres);
                 doc.setFontSize(12);
-                doc.text(175,20,'Factura: ' + datos[0].num_factura);
+                doc.text(175,20,'Recibo: ' + datos[0].num_factura);
                 doc.setFontSize(12);
                 doc.text(175,26,fechaFormat);
                 doc.line(1,28,208, 28); // horizontal line
@@ -57,8 +57,8 @@ function Facturar(Id_movimiento){
                 doc.text(63,33, 'Vlr.Unitario');
                 doc.text(88,33, 'Cant');
                 doc.text(102,33, 'Asignado');
-                doc.text(140,33, 'Estado');
-                doc.text(170,33, 'Desc');
+                doc.text(149,33, 'Estado');
+                doc.text(173,33, 'Desc');
                 doc.text(189,33, 'Valor');
                 //doc.text(5,34,'ID    Producto  Vlr.Unitario    Cant  Asignado   Estado     Desc %      Valor');
                 doc.line(1,35,208, 35); // horizontal line
@@ -74,8 +74,8 @@ function Facturar(Id_movimiento){
                     console.log(element);
                     let producto = element.Nombre;
                     let cliente = element.Nombres;
-                    if(producto.length > 20) producto = producto.substr(0,20)+'...';
-                    if(cliente.length > 20) cliente = cliente.substr(0,20)+'...';
+                    if(producto.length > 20) producto = producto.substr(0,23)+'...';
+                    if(cliente.length > 20) cliente = cliente.substr(0,18)+'...';
                     if(element.EstadoVenta == 'Facturado'){
                         var x=5;
                         doc.text(x,y,""+element.Codigo_pdto);
@@ -87,10 +87,10 @@ function Facturar(Id_movimiento){
                         doc.text(x,y,""+element.Cantidad);
                         var x=103;
                         doc.text(x,y,""+cliente);
-                        var x=140;
+                        var x=149;
                         doc.text(x,y,""+element.Entregado);
                         /* sumar dos valores */
-                        var x=173;
+                        var x=176;
                         doc.text(x,y,""+element.porcentaje + ' %');
                         var x=190;
                         doc.text(x,y,""+element.VlrTotal);

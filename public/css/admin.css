@@ -98,11 +98,8 @@
     text-align: center;
 }
 a.btn-edit{
-    padding: 10px;
     color: white;
     background-color: rgb(64, 192, 224);
-    border-radius: 5px;
-    margin-right: 10px;
     cursor: pointer;
 }
 .btnact{
@@ -149,11 +146,15 @@ a.btn-new{
 a.btn-new > i{
     margin-right: 10px;
 }
+a.btn-sale {
+    font-size: 1.1rem;
+}
+a.btn-edit {
+    font-size: 1.1rem;
+}
 a.btn-sale{
-    padding: 10px;
     color: white;
     background-color: rgb(105, 195, 31);
-    border-radius: 5px;
     cursor: pointer;
 }
 a.btn-delete{

@@ -55,8 +55,9 @@ controller.listarEntregas = async (req, res) => {
 }
 controller.listarPorEntregar = async (req, res) => {
     var IdUP = req.session.user.up_id; //SESION DE USUARIO
-    let sql = `SELECT d.id_detalle, per.identificacion, per.Nombres, per.Ficha, 
-    p.Nombre as producto, d.cantidad, (d.cantidad * d.valor) as valor, d.Entregado as Estado,  d.fecha FROM movimientos m 
+    let sql = `SELECT d.id_detalle, per.identificacion, per.Nombres, per.Ficha, per.Foto,
+    p.Nombre as producto, d.cantidad, (d.cantidad * d.valor) as valor, d.Entregado as Estado,  d.fecha 
+    FROM movimientos m 
     JOIN detalle d on d.fk_Id_movimiento = m.Id_movimiento 
     JOIN personas per on per.identificacion = d.Persona 
     JOIN inventario i on i.id_inventario = d.fk_id_inventario JOIN productos p on 

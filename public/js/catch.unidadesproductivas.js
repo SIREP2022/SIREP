@@ -134,7 +134,7 @@ function renderTableUP(datos){
         "Estado": element.estado,
         "Entrega": element.entrega_producto,
         "Encargado": element.Nombres,
-        "btn": `<a class="btn-edit" onclick="Mostrarventanaup(`+element.codigo_up+`);">Editar</a>`,
+        "btn": `<a class="btn btn-edit" onclick="Mostrarventanaup(`+element.codigo_up+`);">Editar</a>`,
       }
       lista.push(array)
     });

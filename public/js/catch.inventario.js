@@ -53,7 +53,7 @@ function ListarInventario(){
                 "col-2": element.nombrePunto,
                 "col-3": element.nombrePdto,
                 "col-4": element.stock,
-                "col-5": `<a class='btn-edit' onclick='Mostrarventana("`+element.Codigo_pdto+`","`+element.id_inventario+`")';>Editar</a>`,
+                "col-5": `<a class='btn btn-edit' onclick='Mostrarventana("`+element.Codigo_pdto+`","`+element.id_inventario+`")';>Editar</a>`,
             }
             json.push(array);
         });

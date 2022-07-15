@@ -227,7 +227,7 @@ function Listarprecios(pdtoid) {
                     "col-1": element.cargonombre,
                     "col-2": element.nombrepdto,
                     "col-3": element.preciopdto,
-                    "col-4": "<a class='btn-edit' onclick='ObtenerPrecio(" + element.id_precio + ")';>Editar</a>"
+                    "col-4": "<a class='btn btn-edit' onclick='ObtenerPrecio(" + element.id_precio + ")';>Editar</a>"
                 }
                 json.push(array);
             });
@@ -325,10 +325,20 @@ function ActualizarPrecio() {
                 });
             });
 }
-
+function formatHour(hour){
+    let hours = hour.split(':')[0];
+    let extension = '';
+    if(parseInt(hours) > 12) {
+        hours = hours - 12;
+        extension = 'p.m'
+    } else extension = 'a.m'
+    let minutes = hour.split(':')[1];
+    return `${hours}:${minutes} ${extension}`;
+}
 function renderTableProductos(datos) {
     let lista = [];
     datos.forEach(element => {
+        
         let medida = 'N/A';
         if (element.medidas) medida = element.medidas;
         let array = {
@@ -336,7 +346,6 @@ function renderTableProductos(datos) {
             "Nombres": element.Nombre_pdto,
             "Imagen": "<img class='imgpdto' src='/img/products/" + element.Imgpdto + "'></img>",
             "Descripcion": element.Descripcion,
-            "Reserva": element.Reserva,
             "UP": element.Nombre_up,
             "Tipo": element.tipo,
             "Inventario": element.inventario,
@@ -345,9 +354,11 @@ function renderTableProductos(datos) {
             "Descuento": element.porcentaje + "%",
             "MaximoRes": element.MaxReserva,
             "Estado": element.Estado,
-            "Horainicio": element.hora_inicio,
-            "Horafin": element.hora_fin,
-            "btn": `<a class="btn-edit" onclick="Buscarproductos(` + element.Codigo_pdto + `);">Editar</a><a class="btn-sale" onclick="Buscarpstoprecio(` + element.Codigo_pdto + `);">Precio</a>`,
+            "Horario": `${formatHour(element.hora_inicio)} <br> ${formatHour(element.hora_fin)}`,
+            "btn": `<div class="btn-group">
+                <a class="btn btn-edit" onclick="Buscarproductos(` + element.Codigo_pdto + `);">Editar</a>
+                <a class="btn btn-sale" onclick="Buscarpstoprecio(` + element.Codigo_pdto + `);">Precio</a>
+            </div>`,
         }
         lista.push(array)
     });
@@ -362,7 +373,6 @@ function renderTableProductos(datos) {
             { "data": "Nombres" },
             { "data": "Imagen" },
             { "data": "Descripcion" },
-            { "data": "Reserva" },
             { "data": "UP" },
             { "data": "Tipo" },
             { "data": "Inventario" },
@@ -371,8 +381,7 @@ function renderTableProductos(datos) {
             { "data": "Descuento" },
             { "data": "MaximoRes" },
             { "data": "Estado" },
-            { "data": "Horainicio" },
-            { "data": "Horafin" },
+            { "data": "Horario" },
             { "data": "btn" }
         ]
     })
