@@ -84,6 +84,10 @@
                                     style="display: block; width: 100%; max-width: 140px; margin: 0 auto;">
                                 </div>
                                 <div class="col-sm-8">
+                                    <div class="row" id="div-ficha">
+                                        <div class="col-sm-4"><b class="mini-titulo">Cargo</b></div>
+                                        <div class="col-sm-8"><span id="span-cargo"></span></div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-sm-4"><b class="mini-titulo">Identificación</b></div>
                                         <div class="col-sm-8"><span id="span-identificacion"></span></div>
@@ -142,13 +146,14 @@
         var ModalConfirmar = new bootstrap.Modal(document.getElementById('ModalConfirmar'), {keyboard: false});
         identificacion.focus();
         var noEntregados = [];
-        function reclamarFRM(id_detalle, identificacion, Nombres, producto, cantidad, valor, ficha, foto){
+        function reclamarFRM(id_detalle, identificacion, Nombres, producto, cantidad, valor, ficha, foto, cargo){
             document.getElementById('id-detalle').value = id_detalle;
             document.getElementById('span-identificacion').innerHTML = identificacion;
             document.getElementById('span-nombres').innerHTML = Nombres;
             document.getElementById('span-cantidad').innerHTML = cantidad;
             document.getElementById('span-producto').innerHTML = producto;
             document.getElementById('span-valor').innerHTML = '$ '+valor;
+            document.getElementById('span-cargo').innerHTML = cargo;
             document.getElementById('span-ficha').innerHTML = ficha;
             document.getElementById('img-profile').setAttribute('src', `/img/perfil/${foto}`)
             if(ficha <= 0) document.getElementById('div-ficha').setAttribute('style', 'display: none')
@@ -219,7 +224,9 @@
                     title: res.titulo,
                     icon: res.icono,
                     text: res.mensaje,
-                    timer : res.timer
+                    timer : res.timer,
+                    showConfirmButton: false,
+                    focusConfirm: false,
                 })
                 ModalConfirmar.hide();
                 document.getElementById('identificacion').focus();
@@ -263,9 +270,9 @@
             datos.forEach(element => {
                 console.log(element)
                 if(tipo == 'reclamados') accionBTN = `
-                    <button onclick="reclamarFRM('${element.id_detalle}', '${element.identificacion}', '${element.Nombres}', '${element.producto}', '${element.cantidad}', '${element.valor}', '${element.Ficha}', '${element.Foto}')" class='Reclamado  btn btn-success'>Entregar</button>`
+                    <button onclick="reclamarFRM('${element.id_detalle}', '${element.identificacion}', '${element.Nombres}', '${element.producto}', '${element.cantidad}', '${element.valor}', '${element.Ficha}', '${element.Foto}', '${element.nombre_cargo}')" class='Reclamado  btn btn-success'>Entregar</button>`
                 if(tipo == 'no reclamados') {accionBTN = `
-                    <button onclick="reclamarFRM('${element.id_detalle}', '${element.identificacion}', '${element.Nombres}', '${element.producto}', '${element.cantidad}', '${element.valor}', '${element.Ficha}', '${element.Foto}')" class='Reclamado  btn btn-success'>Entregar</button>
+                    <button onclick="reclamarFRM('${element.id_detalle}', '${element.identificacion}', '${element.Nombres}', '${element.producto}', '${element.cantidad}', '${element.valor}', '${element.Ficha}', '${element.Foto}', '${element.nombre_cargo}')" class='Reclamado  btn btn-success'>Entregar</button>
                     <button onclick="confirmarNoReclamado('${element.id_detalle}')" class='btn btn-secondary'>No reclamado</button>`
                 }
                 
