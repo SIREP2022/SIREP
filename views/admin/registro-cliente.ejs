@@ -23,12 +23,16 @@
               <div class="col-sm-6">
                 <h1 class="h-title">Administrar Usuarios</h1>
               </div>
-              <div class="col-sm-6" style="display: flex; justify-content: flex-end; align-items: flex-start;">
+              <div class="col-sm-6" 
+              style="display: flex; justify-content: flex-end; align-items: flex-start;">
+                <%if (profile.Rol.trim() == 'Admin') { %>
                 <a class="btn-new" 
                 style="margin-right: 10px";
                 onclick="showModalMigrar()">
-                <i class="icon-file-excel-o"></i>
-                Migrar Usuarios</a>
+                  <i class="icon-file-excel-o"></i>
+                  Migrar Usuarios
+                </a>
+                <% } %>
                 <a class="btn-new" id="btn" onclick="registroCliente()">
                   <i class='icon-user2'></i>Nuevo Usuario
                 </a>
@@ -148,16 +152,11 @@
                         <div class="col">
                           <select id="cargo" class="form-select" aria-label="Default select example">
                             <option selected>Seleccione el Cargo</option>
-                            <% 
-                            for (let u = 0; u < Datos.length; u++) 
-                            {
-                          %>
+                            <% for (let u = 0; u < Datos.length; u++) { %>
                             <option value="<%=Datos[u].idcargo %>">
                               <%=Datos[u].nombre_cargo %>
                             </option>
-                          <%
-                            }
-                          %>
+                            <% } %>
                           </select>
                         </div>
                         <div  class="col">
@@ -191,10 +190,10 @@
                 <div class="modal-body">
                   <!--===================formulario=======================-->
                   <form>
-
+                    <input type="hidden" id="idenR">
                     <div class="row">
                       <div class="col mt-1">
-                        <input type="number" id="idenR"  class="form-control" placeholder="Numero Identificación">
+                        <input type="number" id="new_iden"  class="form-control" placeholder="Numero Identificación">
                       </div>
                       <div class="col">
                         <input type="text" id="nombR"  class="form-control" placeholder="Nombres">
@@ -222,16 +221,11 @@
                     <div class="row mt-2">
                       <div class="col">
                         <select id="cargoR" class="form-select" aria-label="Default select example">
-                          <% 
-                          for (let u = 0; u < Datos.length; u++) 
-                          {
-                          %>
+                          <% for (let u = 0; u < Datos.length; u++) {%>
                           <option value="<%=Datos[u].idcargo %>">
                             <%=Datos[u].nombre_cargo %>
                           </option>
-                          <%
-                          }
-                          %>
+                          <% } %>
                           
                         </select>
                       </div>
@@ -254,8 +248,6 @@
                       </div>
                     </div>
                   </form>
-
-                
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn link-actualizar" onclick="actualizarRegistro();">Actualizar</button>
@@ -354,6 +346,7 @@
     }
     var datos= new URLSearchParams();
     datos.append('identificacion', info[0]);
+    datos.append('new_iden', info[0]);
     datos.append('nombre', info[1]);
     datos.append('correo', info[2]);
     datos.append('telefono', info[3]);

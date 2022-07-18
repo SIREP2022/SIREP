@@ -32,8 +32,10 @@
             </span>
             <ul>
                 <li><a href="/admin"><span class="icon-home"></span>Inicio</a></li>
-                <%if (profile.Rol.trim() == 'Admin') { %>
+                <%if (profile.Rol.trim() == 'Admin' || profile.Rol == 'Punto Venta' && profile.pv_nombre) { %>
                 <li><a href="/registro-clientes"><span class="icon-suitcase"></span>Admin Usuarios</a></li>
+                <%} %> 
+                <%if (profile.Rol.trim() == 'Admin') { %>
                 <li><a href="/unidades-productivas"><span class="icon-suitcase"></span>Admin Unidades Productivas</a></li>
                 <li><a href="/punto-venta"><span class="icon-suitcase"></span>Admin Puntos de Venta</a></li>
                 <li><a href="/productos"><span class="icon-suitcase"></span>Admin Productos</a></li>

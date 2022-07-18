@@ -57,7 +57,7 @@ controlador.RegistroCliente = async (req,res)=>{
 /* ================Actualizar=========== */
 controlador.buscar = async (req,res)=>{
     var iden = req.body.identificacion;
-    var sql ="select * from personas where identificacion="+iden;
+    var sql =`select * from personas where identificacion='${iden}'`;
     try{
         let rows = await query(sql);
         return res.json(rows[0]);
@@ -69,6 +69,7 @@ controlador.buscar = async (req,res)=>{
 /* botonactualizar */
 controlador.actualizar = async (req,res)=>{
     let ide = req.body.identificacion;
+    let new_ide = req.body.new_iden;
     let nomb = req.body.nombre;
     let corre = req.body.correo;
     let direc = req.body.direccion;
@@ -82,9 +83,11 @@ controlador.actualizar = async (req,res)=>{
     
     // PASSWORD ENCRYPT
     let pass = ide;
-    var sql = `update  personas set 
-    Password = '${pass}',
-    identificacion=${ide},Nombres='${nomb}',Correo='${corre}',Direccion='${direc}',Telefono='${tel}',Ficha='${ficha}',Cargo='${cargo}',Rol='${rol}',Estado='${estado}' where identificacion=${ide}`;
+    var sql = `update  personas set Password = '${pass}',
+    identificacion=${new_ide},Nombres='${nomb}',Correo='${corre}',
+    Direccion='${direc}',Telefono='${tel}',Ficha='${ficha}',
+    Cargo='${cargo}',Rol='${rol}',Estado='${estado}' 
+    where identificacion=${ide}`;
    try{
        await query(sql);
        return res.json({status:200, msg: 'Usuario actualizado con éxito'});

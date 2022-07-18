@@ -134,6 +134,7 @@ function buscarUsuario(ident){
     .then(data=>{
         if(data.status == 401) return console.log(data)
         document.getElementById('idenR').value = data.identificacion;
+        document.getElementById('new_iden').value = data.identificacion;
         document.getElementById('nombR').value = data.Nombres;
         document.getElementById('corrR').value = data.Correo;
         document.getElementById('direcR').value = data.Direccion;
@@ -152,6 +153,7 @@ function buscarUsuario(ident){
 /* ===========boton actualizar================ */
 function actualizarRegistro(){
     var id  = document.getElementById('idenR').value;
+    var new_id  = document.getElementById('new_iden').value;
     var nom = document.getElementById('nombR').value;
     var correo =  document.getElementById('corrR').value;
     var direc =   document.getElementById('direcR').value;
@@ -163,6 +165,7 @@ function actualizarRegistro(){
     var datos= new URLSearchParams();
  
     datos.append('identificacion',id);
+    datos.append('new_iden',new_id);
     datos.append('nombre',nom);
     datos.append('correo',correo);
     datos.append('direccion',direc);
