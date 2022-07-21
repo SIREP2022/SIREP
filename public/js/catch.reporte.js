@@ -91,16 +91,16 @@ function MostrarAdminvalor(){
     .then(data=>{
         let json = [];
         let array = {}
-            data.forEach(element => {
-                array = {
-                    "col-1": element.producto,
-                    "col-2": element.cantidad,
-                    "col-3": element.valor,
-                    "col-4": element.fecha_min,
-                    "col-5": element.fecha_max,
-                }
-                json.push(array);
-            });
+        data.forEach(element => {
+            array = {
+                "col-1": element.producto,
+                "col-2": element.cantidad,
+                "col-3": element.valor,
+                "col-4": element.fecha_min,
+                "col-5": element.fecha_max,
+            }
+            json.push(array);
+        });
         $('#rep_val_admi').DataTable({
             "paging":true,
             "processing":true,

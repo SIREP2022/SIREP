@@ -50,8 +50,9 @@
     display: grid;
     position: relative;
     grid-template:
-    "imagen-res prod-res valor-res" 25px
-    "imagen-res cliente-res     valor-res" auto /
+    "imagen-res prod-res     valor-res" 25px
+    "imagen-res cliente-res  valor-res" auto 
+    "imagen-res fecha-res    estado-res"auto /
     100px       180px 1fr;
 }
 .producto-reserva .imagen-reserva{
@@ -67,11 +68,14 @@
     display: block;
     margin: 0 auto;
 }
+.producto-reserva .fecha-res,
 .producto-reserva .producto-res,
 .producto-reserva .cliente-res{
     padding: 0 10px;
 }
 .producto-reserva .producto-res{grid-area: prod-res;}
+.producto-reserva .fecha-res{grid-area: fecha-res; font-size: .8rem;}
+.producto-reserva .estado-res{grid-area: estado-res; font-size: .8rem;}
 .producto-reserva .producto-res #cant-prod{
     font-weight: bold;
     font-size: .8rem;    

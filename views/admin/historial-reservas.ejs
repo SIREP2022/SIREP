@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head'); %>
+    <title>SENA</title>
+</head>
+<body>
+    <div class="content-header">
+        <%- include('../partials/header-admin') %> 
+    </div>
+    <div class="main-contenedor">
+        <div class="body-info-section">
+            <div class="full-container">
+                <div class="breadcrumb">
+                   
+                </div>
+                <!-- <div class="table-admin mt-1"> -->
+                    <h1 class="h-title">Historial de reservas</h1>
+                    <div class="table-admin mt-1">
+                        <table id="historial-table" id="table-info" class="table-info">
+                            <thead>
+                                <th>Nombre producto</th>
+                                <th>Valor</th>
+                                <th>Cantidad</th>
+                                <th>Descuento</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                      </table>                    
+                    </div><br>
+                <!-- </div> -->
+            </div> 
+        </div>
+    </div>
+    <%- include('../partials/footer') %>
+    <%- include('../partials/scripts.ejs') %> 
+    <script>
+        function Listar_Historial_Reservas(){
+            fetch('/Listar_Reservas_Pendientes',{
+                method:'get',
+                headers: {
+                    'Authorization': 'Bearer '+token
+                }
+            })
+            .then(res=>res.json())
+            .then(res => {
+                let json = [];
+                let array = {}
+                res.forEach(element => {
+                    let array = {
+                        Nombre: element.Nombre,
+                        valor: element.valor,
+                        cantidad: element.cantidad,
+                        porcentaje: element.porcentaje,
+                        subtotal: element.subtotal,
+                        Estado: element.Estado,
+                        Fecha: formatDate(element.Fecha)
+                    }
+                    if(element.id_detalle) json.push(array);
+                });
+                $('#historial-table').DataTable({
+                    "data":json,
+                    columns:[
+                        {"data": "Nombre"},
+                        {"data": "valor"},
+                        {"data": "cantidad"},
+                        {"data": "porcentaje"},
+                        {"data": "subtotal"},
+                        {"data": "Estado"},
+                        {"data": "Fecha"},
+                    ]
+                });
+            })
+        }
+        Listar_Historial_Reservas();
+    </script>
+</body>
+</html>

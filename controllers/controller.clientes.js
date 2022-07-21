@@ -34,7 +34,7 @@ controlador.RegistroCliente = async (req,res)=>{
     if(!cargo) cargo = 1;
     if(cargo != 1) ficha = 0;
     let rol = req.body.rol;
-    if(!rol) rol = 'Aprendiz';
+    if(!rol) rol = 'Invitado';
     let estado = req.body.estado;
     if(!estado) estado = 1;
     

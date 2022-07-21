@@ -130,19 +130,6 @@
     <%- include('../partials/footer') %>
     <%- include('../partials/scripts.ejs') %> 
     <script>
-        function formatDate(date){
-            var fecha = new Date(date);
-            var ano = fecha.getFullYear();
-            var mes = fecha.getMonth()+1;
-            var dia = fecha.getDate();
-            if(mes < 10){
-                mes="0"+mes
-            }
-            if(dia < 10 ){
-                dia="0"+dia
-            }
-            return fechaFormat=dia+"/"+mes+"/"+ano;
-        }
         var ModalConfirmar = new bootstrap.Modal(document.getElementById('ModalConfirmar'), {keyboard: false});
         identificacion.focus();
         var noEntregados = [];

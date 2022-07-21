@@ -1,6 +1,20 @@
 let token = localStorage.getItem('token');
 var url = location.pathname;
 
+function formatDate(date){
+    var fecha = new Date(date);
+    var ano = fecha.getFullYear();
+    var mes = fecha.getMonth()+1;
+    var dia = fecha.getDate();
+    if(mes < 10){
+        mes="0"+mes
+    }
+    if(dia < 10 ){
+        dia="0"+dia
+    }
+    return fechaFormat=dia+"/"+mes+"/"+ano;
+}
+
 const currency = function(number){
     return new Intl.NumberFormat('em-IN').format(number);
 };
@@ -54,9 +68,22 @@ function Listar_Reservas_Pendientes(){
         let count_reserva = document.getElementById('num-reserva');
         var total=0;
         let numReservas = 0;
+        let id_detalle = '';
+        if(data[0]) id_detalle = data[0].id_detalle;
         data.forEach(e => {
             if(e.id_detalle==null) return;
-            numReservas++;
+            var textcolor = '';
+            var eliminarBTN = '';
+            switch (e.Estado) {
+                case 'Reservado': 
+                    numReservas++;
+                    total=total+e.subtotal;
+                    eliminarBTN = `<a class="reserva-caja" href=javascript:eliminarDetalle(${e.id_detalle})><div class="eliminar-producto-res">Eliminar</div></a>`;
+                    textcolor = 'text-success';
+                break;
+                case 'Facturado': textcolor = 'text-danger';break;
+            }
+            
             reservas += 
             `<div class="reserva-section producto-reserva">
                 <div class="imagen-reserva">
@@ -69,24 +96,37 @@ function Listar_Reservas_Pendientes(){
                 <div class="valor-res">
                     $ ${currency(e.subtotal)}
                 </div>
-                <a class="reserva-caja" href=javascript:eliminarDetalle(${e.id_detalle})>
-                    <div class="eliminar-producto-res">Eliminar</div>
-                </a>
+                <div class="fecha-res">
+                    ${formatDate(e.Fecha)}
+                </div>
+                <div class="estado-res">
+                    <span class="${textcolor}">${e.Estado}</span>
+                </div>
+                ${eliminarBTN}
             </div>`;
-            total=total+e.subtotal;
         });
-        if(total > 0){
-            total_reserva.innerHTML = 
-            `<div class="row reserva-caja">
+        let cardFooter = '';
+
+        if(data.length > 0 && id_detalle){
+            if(total > 0) cardFooter += `
+            <div class="row reserva-caja" style="border-bottom: 1px solid var(--light-gray-color);
+            padding-bottom: 8px;">
                 <div class="col-6"><b>Total</b></div>
                 <div class="col-6" style="text-align: right; padding-right: 30px;">$ ${currency(total)}</div>
             </div>`
-        } else total_reserva.innerHTML = `No existen reservas activas`
+            cardFooter += `
+            <div class="row reserva-caja" style="padding-top: 5px;">
+                <a href="/historial-reservas" style="text-decoration: none;
+                text-align: center;">Historial de reservas</a>
+            </div>`
+        } else cardFooter += `No existen reservas activas`;
+        total_reserva.innerHTML = cardFooter;
         body_reserva.innerHTML = reservas;
         count_reserva.innerHTML = numReservas;
 
         if(document.getElementById('rol_user').value == 'Vocero') document.getElementById('tipo_res').value = 'Grupal'
         else document.getElementById('tipo_res').value = 'Individual'     
+
 
         document.getElementById('ficha').value=data[0].ficha;
         document.getElementById('id_movimiento_header').value=data[0].Id_movimiento;

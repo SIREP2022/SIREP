@@ -367,12 +367,6 @@
                   <input type="number" id="tele" class="form-control" placeholder="Telefono">
                 </div>
                 <div class="col">
-                  <input type="number" id="ID" class="form-control" placeholder="ID ficha" style="display: none;">
-                </div>
-              </div>
-
-              <div class="row mt-2">
-                <div class="col">
                   <select id="cargo" class="form-select" aria-label="Default select example">
                     <option selected>Seleccione el Cargo</option>
                     <% for (let u=0; u < Datos.length; u++) { %>
@@ -382,12 +376,12 @@
                       <% } %>
                   </select>
                 </div>
-                <div class="col">
-                  <input type="text" id="rol" style="display: none;" value="Invitado">
-                </div>
+              </div>
 
+              <div class="row mt-2">
+                <input type="hidden" id="rol" value="Invitado">
                 <div class="col">
-
+                  <input type="number" id="ID" class="form-control" placeholder="ID ficha" style="display: none;">
                 </div>
               </div>
             </form>

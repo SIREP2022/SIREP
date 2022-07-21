@@ -1,6 +1,9 @@
 const query = require("../database/pool-conexion");
 const controlador = {};
 
+controlador.Historial = (req, resp) => {
+    resp.render('admin/historial-reservas', {profile: req.session.user});
+}
 
 controlador.Listar_Todos_Productos = async(req, res) => {
     var sesion_Cargo = req.session.user.id_cargo;
@@ -34,10 +37,10 @@ controlador.Buscar_Producto = async(req, res) => {
 }
 controlador.Listar_Reservas_Pendientes = async(req, res) => {
     var sesion_persona = req.session.user.identificacion;
-    let sql1 = `call Administrar_Reserva('Buscar_Reserva',${sesion_persona})`;;
+    let sql1 = `SELECT * FROM lista_detalles where identificacion = '${sesion_persona}' ORDER BY Estado ASC`;
     try {
         let rows = await query(sql1);
-        return res.json(rows[0]);
+        return res.json(rows);
     } catch (e) {
         console.log("error: " + e)
     }
