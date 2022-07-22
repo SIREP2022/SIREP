@@ -52,6 +52,24 @@ function logOut(){
     .catch(err => console.log(err))
     window.location.href = '/';
 }
+function Crear_Movimiento(){
+    fetch('/Crear_Movimiento',{
+        method:'POST',
+        headers: {
+            'Authorization': 'Bearer '+token
+        }
+    })
+    .then(res=>res.json())
+    .then(data => {
+        if(document.getElementById('rol_user').value == 'Vocero') document.getElementById('tipo_res').value = 'Grupal'
+        else document.getElementById('tipo_res').value = 'Individual'     
+
+        document.getElementById('ficha').value=data[0].ficha;
+        document.getElementById('id_movimiento_header').value=data[0].Id_movimiento;
+        document.getElementById('ident').value=data[0].identificacion;
+        console.log(data)
+    })
+}
 function Listar_Reservas_Pendientes(){
     fetch('/Listar_Reservas_Pendientes',{
         method:'get',
@@ -92,7 +110,7 @@ function Listar_Reservas_Pendientes(){
                 <div class="producto-res">
                     ${e.Nombre}  <span id="cant-prod">x ${e.cantidad}</span>
                 </div>
-                <div class="cliente-res">${e.aprendiz.substr(0,20)}</div>
+                <div class="cliente-res">${e.Nombres.substr(0,20)}</div>
                 <div class="valor-res">
                     $ ${currency(e.subtotal)}
                 </div>
@@ -124,13 +142,7 @@ function Listar_Reservas_Pendientes(){
         body_reserva.innerHTML = reservas;
         count_reserva.innerHTML = numReservas;
 
-        if(document.getElementById('rol_user').value == 'Vocero') document.getElementById('tipo_res').value = 'Grupal'
-        else document.getElementById('tipo_res').value = 'Individual'     
-
-
-        document.getElementById('ficha').value=data[0].ficha;
-        document.getElementById('id_movimiento_header').value=data[0].Id_movimiento;
-        document.getElementById('ident').value=data[0].identificacion;
+       
     });
 }
 function eliminarDetalle(id){
@@ -186,4 +198,7 @@ document.addEventListener('click', (e)=> {
 reservaBtn.addEventListener('click', ()=> { OpenAndCloseReservaBox()});
 profileBtn.addEventListener('click', ()=> { OpenAndCloseProfileBox()});
 logoutBtn.addEventListener('click', ()=> logOut());
-window.addEventListener('DOMContentLoaded',()=>{Listar_Reservas_Pendientes();});
+window.addEventListener('DOMContentLoaded',()=>{
+    Crear_Movimiento();
+    Listar_Reservas_Pendientes();
+});

@@ -40,8 +40,7 @@
               <th scope="col">Fecha</th>
               <th scope="col">Valor de la Compra</th>
               <th scope="col">Estado</th>
-              <th scope="col">Imprimir</th>
-              <th scope="col">Accion</th>
+              <th scope="col" colspan="2">Acción</th>
             </tr>
           </thead>
           <tbody id="cuerpo-tabla">
@@ -50,6 +49,28 @@
         </table>
       </div>
     </div>
+
+    <!-- =======MODAL PERMISO DE ADMIN============ -->
+    <div class="modal fade" id="modalRechazarMovimiento" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">¿Deseas rechazar esta reserva?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Digita el motivo del rechazo</label>
+              <textarea class="form-control" id="rechazo_area"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <input class="btn btn-primary" type="button" value="Validar" onclick="ConfirmarRechazoRes()">
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal -->
     <div class="modal fade" id="modalFacturar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">

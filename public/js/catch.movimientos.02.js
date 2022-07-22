@@ -23,7 +23,15 @@ function nuevaVenta() {
     crearFields();
     newVenta.toggle();
 }
-
+var modalRechazarMovimiento = new bootstrap.Modal(document.getElementById('modalRechazarMovimiento'), { keyboard: false });
+function RechazarMovimiento(){
+    modalRechazarMovimiento.show();
+}
+function ConfirmarRechazoRes(){
+    let motivo = document.getElementById('rechazo_area');
+    if(!motivo.value.trim()) return motivo.focus();
+    // PENDIENTE POR COMPLETAR
+}
 function listarMovimientos() {
     fetch('/listarMovimientos', {
         method: 'get',
@@ -59,7 +67,7 @@ function renderTableMovimientos(datos){
     let lista = [];
     datos.forEach(element => {
         if(element.detalles > 0 && element.Estado == 'Facturado') btnAccion = `<a class='detalle' href= "javascript:mostrarDetalle('${element.Id_movimiento}','${element.personas}','${element.identificacion}');"><i class='icon-bookmark-outline'></i>Facturar</a>`;
-        else btnAccion = ''
+        else btnAccion = "<a  href='javascript:RechazarMovimiento("+element.Id_movimiento+")' class='btn btn-danger'>Rechazar</a>"
         btnImprimir = "<a class='print' href='javascript:Facturar("+element.Id_movimiento+")'><i class='icon-file-pdf-o' style='display:none'></i></a>"
         if(element.Estado=='Facturado')btnImprimir = "<a class='print' href='javascript:Facturar("+element.Id_movimiento+")'><i class='icon-file-pdf-o' style='display:block'></i></a>"
         else btnImprimir = ''
@@ -252,7 +260,7 @@ function alertaDelete(){
 /* =====================aler cambiar estado delete a facturar======================== */
 function swealerestadoDeleteAFacrurar(){
     Swal.fire({
-        title: 'Seguro quieres Facturar??',
+        title: 'Seguro quieres Facturar?',
         showDenyButton: true,
         showCancelButton: false,
         confirmButtonText: '<a  onclick="finalizarCompra();">Confirmar Factura</a>',

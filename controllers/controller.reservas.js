@@ -35,9 +35,21 @@ controlador.Buscar_Producto = async(req, res) => {
         console.log(e)
     }
 }
+
+controlador.Crear_Movimiento = async(req, res) => {
+    var sesion_persona = req.session.user.identificacion;
+    let sql = `call Administrar_Reserva('Buscar_Reserva', ${sesion_persona})`;
+    try{
+        let rows = await query(sql);
+        return res.json(rows[0])
+    } catch (e) {
+        console.log("error " + e)
+    }
+}
+
 controlador.Listar_Reservas_Pendientes = async(req, res) => {
     var sesion_persona = req.session.user.identificacion;
-    let sql1 = `SELECT * FROM lista_detalles where identificacion = '${sesion_persona}' ORDER BY Estado ASC`;
+    let sql1 = `SELECT * FROM listamovimientos where identificacion = '${sesion_persona}' ORDER BY Estado ASC`;
     try {
         let rows = await query(sql1);
         return res.json(rows);
@@ -55,6 +67,7 @@ controlador.Listar_Usuaios_Ficha = async(req, res) => {
         console.log(e)
     }
 }
+
 
 controlador.Registrar_Detalle = async(req, res) => {
     var sesion_Cargo = req.session.user.id_cargo;
