@@ -41,7 +41,7 @@
     border-bottom: 1px solid var(--light-gray-color);
 }
 .lista-reserva-box .reserva-body{
-    max-height: 230px;
+    max-height: 330px;
     overflow-y: scroll;
     box-sizing: border-box;
     border-bottom: 1px solid var(--light-gray-color);

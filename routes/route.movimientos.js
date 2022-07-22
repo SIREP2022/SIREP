@@ -13,6 +13,7 @@ routeMovimientos.post('/agregarDetalle', auth.authToken,  contMovimientos.agrega
 routeMovimientos.post('/eliminarDetalle', auth.authToken,  contMovimientos.eliminarDetalle);
 routeMovimientos.get('/listarPrecioProductos', auth.authToken,  contMovimientos.listarPreciosProductos);
 routeMovimientos.get('/listarProductosVenta', auth.authToken,  contMovimientos.listarProductosVenta);
+routeMovimientos.post('/RechazarMovimiento', auth.authToken,  contMovimientos.RechazarMovimiento);
 
 /* ==============segunda parte ===== */
 routeMovimientos.get('/listarDetalle/:idmovimiento', auth.authToken,  contMovimientos.mostrarDetalle);

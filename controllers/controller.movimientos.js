@@ -51,6 +51,23 @@ controladorMovimiento.genVenta = async(req, resp) => {
         return resp.json(rows[0]);
     } catch (error) {}
 };
+
+controladorMovimiento.RechazarMovimiento = async (req, res) => {
+    let idmovimiento = req.body.id_movimiento;
+    let descripcion = req.body.descripcion;
+    if(!idmovimiento.trim()) return res.json({status: 'error'})
+    if(!descripcion.trim()) return res.json({status: 'error'})
+    try{
+        let update_movimiento = `UPDATE movimientos SET Estado = 'Rechazado' WHERE Id_movimiento = '${idmovimiento}'`;
+        let update_detalle = `UPDATE detalle SET Estado = 'Rechazado', descripcion = '${descripcion}' WHERE fk_Id_movimiento  = '${idmovimiento}'`;
+        await query(update_movimiento);
+        await query(update_detalle);
+        return res.json({status: 200})
+    } catch(e){
+        console.log(e);
+    }
+}
+
 controladorMovimiento.eliminarDetalle = async (req, resp) => {
     let idDetalle = req.body.idDetalle;
     try {

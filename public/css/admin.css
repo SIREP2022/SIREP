@@ -2,6 +2,15 @@
     --light-gray-color: rgb(213, 213, 213);
     --dark-gray-color: #a9a9a9;
 }
+.text-orange{
+    color: #FC7323;
+}
+.font-bold{
+    font-weight: bold;
+}
+.table-admin a.link-detalle{
+    text-decoration: underline;
+}
 .download-format{
     float: right;
     display: flex;
@@ -60,7 +69,6 @@
 .table-admin a{
     text-decoration: none;
     color: var(--dark-gray-color);
-    font-size: 1.2em;
 }
 .table-admin .option{
     border-radius: 5px;

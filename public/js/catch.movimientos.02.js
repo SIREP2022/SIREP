@@ -24,20 +24,33 @@ function nuevaVenta() {
     newVenta.toggle();
 }
 var modalRechazarMovimiento = new bootstrap.Modal(document.getElementById('modalRechazarMovimiento'), { keyboard: false });
-function RechazarMovimiento(){
+function RechazarMovimiento(id){
+    document.getElementById('movimiento_rechazar').value = id;
     modalRechazarMovimiento.show();
 }
 function ConfirmarRechazoRes(){
-    let motivo = document.getElementById('rechazo_area');
-    if(!motivo.value.trim()) return motivo.focus();
-    // PENDIENTE POR COMPLETAR
+    let descripcion = document.getElementById('rechazo_area');
+    let id_movimiento = document.getElementById('movimiento_rechazar').value;
+    if(!descripcion.value.trim()) return descripcion.focus();
+    var datos = new URLSearchParams();
+    datos.append("id_movimiento", id_movimiento);
+    datos.append("descripcion", descripcion.value);
+    fetch('/RechazarMovimiento', {
+        method: 'POST',
+        headers: {'Authorization': 'Bearer '+ token},
+        body: datos
+    }).then(res => res.json()).then(data => {
+        if(data.status == 'error') return console.log(data);
+        launchAlert({icon: 'success', message: 'Movimiento rechazado exitosamente'});
+        listarMovimientos();
+        modalRechazarMovimiento.hide();
+    });
+    
 }
 function listarMovimientos() {
     fetch('/listarMovimientos', {
         method: 'get',
-        headers: {
-            'Authorization': 'Bearer '+ token,
-        }
+        headers: {'Authorization': 'Bearer '+ token}
     }).then(res => res.json()).then(data => {
         if(data.status == 401) return console.log(data)
         renderTableMovimientos(data);                
@@ -66,7 +79,7 @@ function renderTableCart(info) {
 function renderTableMovimientos(datos){
     let lista = [];
     datos.forEach(element => {
-        if(element.detalles > 0 && element.Estado == 'Facturado') btnAccion = `<a class='detalle' href= "javascript:mostrarDetalle('${element.Id_movimiento}','${element.personas}','${element.identificacion}');"><i class='icon-bookmark-outline'></i>Facturar</a>`;
+        if(element.detalles > 0 && element.Estado == 'Facturado') btnAccion = `<a class='btn btn-primary' href= "javascript:mostrarDetalle('${element.Id_movimiento}','${element.personas}','${element.identificacion}');"><i class='icon-bookmark-outline'></i>Facturar</a>`;
         else btnAccion = "<a  href='javascript:RechazarMovimiento("+element.Id_movimiento+")' class='btn btn-danger'>Rechazar</a>"
         btnImprimir = "<a class='print' href='javascript:Facturar("+element.Id_movimiento+")'><i class='icon-file-pdf-o' style='display:none'></i></a>"
         if(element.Estado=='Facturado')btnImprimir = "<a class='print' href='javascript:Facturar("+element.Id_movimiento+")'><i class='icon-file-pdf-o' style='display:block'></i></a>"
@@ -297,8 +310,7 @@ function alertaGlobal(){
         title: 'Actualizado con exito',
         showConfirmButton: false,
         timer: 2500
-      })
-    
+    })
 }
 
 
@@ -408,7 +420,6 @@ function validarAdmin(){
         headers: {'Authorization': 'Bearer '+ token,}
     }).then(res => res.json())
     .then((data)=> {
-        console.log(data)
         if(data.status == 401) return console.log(data)
         if(data.status == 200) {
             let movimiento = document.getElementById('id_movimiento').value;
@@ -434,3 +445,4 @@ function validarAdmin(){
         }
     });
 }
+

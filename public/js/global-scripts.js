@@ -14,13 +14,25 @@ function formatDate(date){
     }
     return fechaFormat=dia+"/"+mes+"/"+ano;
 }
-
+function launchAlert(data){
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showCancelButton: false,
+        timer: 3000
+    })
+    Toast.fire({
+        icon: data.icon,
+        title: data.message,
+        showConfirmButton: false,
+        timer: 2500
+    })
+}
 const currency = function(number){
     return new Intl.NumberFormat('em-IN').format(number);
 };
 
 let logoutBtn = document.getElementById('logout');
-
 let reservaBtn = document.getElementById('menu_reserva');
 let profileBtn = document.getElementById('profile');
 
@@ -67,7 +79,6 @@ function Crear_Movimiento(){
         document.getElementById('ficha').value=data[0].ficha;
         document.getElementById('id_movimiento_header').value=data[0].Id_movimiento;
         document.getElementById('ident').value=data[0].identificacion;
-        console.log(data)
     })
 }
 function Listar_Reservas_Pendientes(){
@@ -99,7 +110,8 @@ function Listar_Reservas_Pendientes(){
                     eliminarBTN = `<a class="reserva-caja" href=javascript:eliminarDetalle(${e.id_detalle})><div class="eliminar-producto-res">Eliminar</div></a>`;
                     textcolor = 'text-success';
                 break;
-                case 'Facturado': textcolor = 'text-danger';break;
+                case 'Rechazado': textcolor = 'text-danger';break;
+                case 'Facturado': textcolor = 'text-orange';break;
             }
             
             reservas += 
@@ -108,7 +120,7 @@ function Listar_Reservas_Pendientes(){
                     <img id src="img/products/${e.imagen} " class="card-img-top">
                 </div>
                 <div class="producto-res">
-                    ${e.Nombre}  <span id="cant-prod">x ${e.cantidad}</span>
+                    ${e.producto}  <span id="cant-prod">x ${e.cantidad}</span>
                 </div>
                 <div class="cliente-res">${e.Nombres.substr(0,20)}</div>
                 <div class="valor-res">
