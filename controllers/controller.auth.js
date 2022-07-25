@@ -73,6 +73,14 @@ controllerAuth.logIn = async(req, res) => {
         return res.json({status: 'error', message: 'Error with sql query: '+ e})
     } 
 }
+controllerAuth.logOut = (req, res) => { 
+    req.session.user = '';
+    req.session.token = '';
+    req.session.pv = '';
+    req.session.up = '';
+    return res.json({status: 'success'});
+} 
+
 
 controllerAuth.editProfile = async (req, res) => {
     let id = req.params.id;
@@ -94,13 +102,6 @@ controllerAuth.editProfile = async (req, res) => {
         console.log(e)
     }
 }
-
-controllerAuth.logOut = (req, res) => {
-    req.session.user = '';
-    req.session.token = '';
-    req.session.pv = '';
-    req.session.up = '';
-} 
 controllerAuth.changePassword = async (req, res) => {
     let token = req.session.token;
     let decoded = jwt.verify(token, authConfig.secret);

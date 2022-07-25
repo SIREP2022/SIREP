@@ -13,11 +13,12 @@
             <div class="full-container">
                 <div class="breadcrumb"></div>
                 <!-- <div class="table-admin mt-1"> -->
-                    <h1 class="h-title">Historial de reservas</h1>
+                    <h1 class="h-title">Historial de compras</h1>
                     <div class="table-admin mt-1">
                         <table id="historial-table" id="table-info" class="table table-bordered table-striped">
                             <thead>
                                 <th>Nombre producto</th>
+                                <th>Asignado</th>
                                 <th>Valor</th>
                                 <th>Cantidad</th>
                                 <th>Descuento</th>
@@ -51,7 +52,7 @@
         var modalDetalle = new bootstrap.Modal(document.getElementById('modal-detalle'), { keyboard: false });
         function Listar_Historial_Reservas(){
             fetch('/Listar_Reservas_Pendientes',{
-                method:'get',
+                method:'post',
                 headers: {'Authorization': 'Bearer '+token}
             })
             .then(res=>res.json())
@@ -78,6 +79,7 @@
                     
                     let array = {
                         Nombre: element.producto,
+                        asignado: element.Nombres,
                         valor: element.valor,
                         cantidad: element.cantidad,
                         porcentaje: element.porcentaje,
@@ -94,6 +96,7 @@
                     "order":[[6, 'desc']],
                     columns:[
                         {"data": "Nombre"},
+                        {"data": "asignado"},
                         {"data": "valor"},
                         {"data": "cantidad"},
                         {"data": "porcentaje"},

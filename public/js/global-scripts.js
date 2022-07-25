@@ -51,18 +51,17 @@ function logOut(){
     let url = '/auth/logout';
     let config = {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: {'Content-Type': 'application/json',},
         body: ''
     }
     fetch(url, config)
     .then(res => res.json())
     .then(data => {
-        if(data.status == 'error') return window.location.href = '/'
+        localStorage.removeItem('token');
+        if(data.status == 'error') return window.location.href = '/';
+        else window.location.href = '/';
     })
     .catch(err => console.log(err))
-    window.location.href = '/';
 }
 function Crear_Movimiento(){
     fetch('/Crear_Movimiento',{
@@ -82,8 +81,11 @@ function Crear_Movimiento(){
     })
 }
 function Listar_Reservas_Pendientes(){
+    let datos = new URLSearchParams();
+    datos.append('limite', 10);
     fetch('/Listar_Reservas_Pendientes',{
-        method:'get',
+        method:'post',
+        body: datos,
         headers: {
             'Authorization': 'Bearer '+token
         }
@@ -105,10 +107,11 @@ function Listar_Reservas_Pendientes(){
             var eliminarBTN = '';
             switch (e.Estado) {
                 case 'Reservado': 
+                    let id_session = document.getElementById('ident').value;
                     numReservas++;
                     total=total+e.subtotal;
-                    eliminarBTN = `<a class="reserva-caja" href=javascript:eliminarDetalle(${e.id_detalle})><div class="eliminar-producto-res">Eliminar</div></a>`;
                     textcolor = 'text-success';
+                    if(id_session == e.identificacion_m)  eliminarBTN = `<a class="reserva-caja" href=javascript:eliminarDetalle(${e.id_detalle})><div class="eliminar-producto-res">Eliminar</div></a>`;
                 break;
                 case 'Rechazado': textcolor = 'text-danger';break;
                 case 'Facturado': textcolor = 'text-orange';break;
@@ -147,7 +150,7 @@ function Listar_Reservas_Pendientes(){
             cardFooter += `
             <div class="row reserva-caja" style="padding-top: 5px;">
                 <a href="/historial-reservas" style="text-decoration: none;
-                text-align: center;">Historial de reservas</a>
+                text-align: center;">Historial de compras</a>
             </div>`
         } else cardFooter += `No existen reservas activas`;
         total_reserva.innerHTML = cardFooter;

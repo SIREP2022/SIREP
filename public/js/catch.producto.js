@@ -41,6 +41,7 @@ function RegistrarProducto() {
     let medida = document.getElementById('medida').value;
     let promocion = document.getElementById('promocion').value;
     let porcentaje = document.getElementById('porcentaje').value;
+    let reserva_grupal = document.getElementById('res_grupal').value;
 
     var DatosFormData = new FormData();
     DatosFormData.append('Nombrepdto', nombrepdto);
@@ -57,7 +58,7 @@ function RegistrarProducto() {
     DatosFormData.append('medida', medida);
     DatosFormData.append('promocion', promocion);
     DatosFormData.append('porcentaje', porcentaje);
-
+    DatosFormData.append('reserva_grupal', reserva_grupal);
 
     fetch('/Registrar_pdto', {
         method: 'post',
@@ -79,19 +80,73 @@ function RegistrarProducto() {
             ListaProductos();
         });
 };
+function Actaulizarpdto() {
+    let identi = document.getElementById('id_pdto').value;
+    let nombrepdto = document.getElementById('nombreproductoact').value;
+    let FileN = document.getElementById('fileNact');
+    let uppdto = document.getElementById('unidadproductivaact').value;
+    let descripcionpdto = document.getElementById('descripcionproductoact').value;
+    let tipo = document.getElementById('tipoproductoact').value;
+    let reservapdto = document.getElementById('reservaproductoact').value;
+    let maximopdto = document.getElementById('reservamaximaact').value;
+    let horainicio = document.getElementById('horainicioact').value;
+    let horafin = document.getElementById('horafinact').value;
+    let inventario = document.getElementById('controlinventarioact').value;
+    let estadopdto = document.getElementById('estadoproductoact').value;
+    let medidapdto = document.getElementById('medidaact').value;
+    let promocionpdto = document.getElementById('promocionact').value;
+    let porcentajepdto = document.getElementById('porcentajeact').value;
+    let reserva_grupal = document.getElementById('res_grupal_act').value;
+
+
+    var DatosFormData = new FormData();
+    DatosFormData.append('Identificacionact', identi)
+    DatosFormData.append('Nombrepdtoact', nombrepdto);
+    DatosFormData.append('img', FileN.files[0]);
+    DatosFormData.append('unidapdtopdtoact', uppdto);
+    DatosFormData.append('Descripcionpdtoact', descripcionpdto);
+    DatosFormData.append('tipopdtoact', tipo);
+    DatosFormData.append('Reservapdtoact', reservapdto);
+    DatosFormData.append('Maximopdtoact', maximopdto);
+    DatosFormData.append('horainicioact', horainicio);
+    DatosFormData.append('horafinact', horafin);
+    DatosFormData.append('inventarioact', inventario);
+    DatosFormData.append('Estadopdtoact', estadopdto);
+    DatosFormData.append('medidapdtoact', medidapdto);
+    DatosFormData.append('promocionact', promocionpdto);
+    DatosFormData.append('porcentajeact', porcentajepdto);
+    DatosFormData.append('reserva_grupal', reserva_grupal);
+
+    fetch('/Actual_pdto', {
+        method: 'post',
+        body: DatosFormData,
+        headers: {
+            'Authorization': 'Bearer ' + token,
+        }
+    }).then(res => res.json())
+        .then(data => {
+            if (data.status == 401) return console.log(data)
+            Swal.fire({
+                title: data.titulo,
+                icon: data.icono,
+                text: data.mensaje,
+                timer: data.timer
+            });
+            ListaProductos();
+            modalproductosactualizar.hide();
+        });
+};
 
 function ListaProductos() {
     fetch('/Lista_pdto', {
         method: 'get',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        }
+        headers: {'Authorization': 'Bearer ' + token,}
     })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status == 401) return console.log('No autorizado');
-            renderTableProductos(data)
-        })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status == 401) return console.log('No autorizado');
+        renderTableProductos(data)
+    })
 }
 
 function Buscarproductos(ident) {
@@ -122,65 +177,12 @@ function Buscarproductos(ident) {
                 document.getElementById('medidaact').value = pdto.medidas;
                 document.getElementById('promocionact').value = pdto.promocion;
                 document.getElementById('porcentajeact').value = pdto.porcentaje;
+                document.getElementById('res_grupal_act').value = pdto.reserva_grupal;
             });
         });
 };
 
-function Actaulizarpdto() {
-    let identi = document.getElementById('id_pdto').value;
-    let nombrepdto = document.getElementById('nombreproductoact').value;
-    let FileN = document.getElementById('fileNact');
-    let uppdto = document.getElementById('unidadproductivaact').value;
-    let descripcionpdto = document.getElementById('descripcionproductoact').value;
-    let tipo = document.getElementById('tipoproductoact').value;
-    let reservapdto = document.getElementById('reservaproductoact').value;
-    let maximopdto = document.getElementById('reservamaximaact').value;
-    let horainicio = document.getElementById('horainicioact').value;
-    let horafin = document.getElementById('horafinact').value;
-    let inventario = document.getElementById('controlinventarioact').value;
-    let estadopdto = document.getElementById('estadoproductoact').value;
-    let medidapdto = document.getElementById('medidaact').value;
-    let promocionpdto = document.getElementById('promocionact').value;
-    let porcentajepdto = document.getElementById('porcentajeact').value;
 
-
-
-    var DatosFormData = new FormData();
-    DatosFormData.append('Identificacionact', identi)
-    DatosFormData.append('Nombrepdtoact', nombrepdto);
-    DatosFormData.append('img', FileN.files[0]);
-    DatosFormData.append('unidapdtopdtoact', uppdto);
-    DatosFormData.append('Descripcionpdtoact', descripcionpdto);
-    DatosFormData.append('tipopdtoact', tipo);
-    DatosFormData.append('Reservapdtoact', reservapdto);
-    DatosFormData.append('Maximopdtoact', maximopdto);
-    DatosFormData.append('horainicioact', horainicio);
-    DatosFormData.append('horafinact', horafin);
-    DatosFormData.append('inventarioact', inventario);
-    DatosFormData.append('Estadopdtoact', estadopdto);
-    DatosFormData.append('medidapdtoact', medidapdto);
-    DatosFormData.append('promocionact', promocionpdto);
-    DatosFormData.append('porcentajeact', porcentajepdto);
-
-    fetch('/Actual_pdto', {
-        method: 'post',
-        body: DatosFormData,
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        }
-    }).then(res => res.json())
-        .then(data => {
-            if (data.status == 401) return console.log(data)
-            Swal.fire({
-                title: data.titulo,
-                icon: data.icono,
-                text: data.mensaje,
-                timer: data.timer
-            });
-            ListaProductos();
-            modalproductosactualizar.hide();
-        });
-};
 
 /* =============================================================================*/
 function Buscarpstoprecio(codgiopdto) {

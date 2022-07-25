@@ -39,10 +39,13 @@ controlador.Crear_Movimiento = async(req, res) => {
 
 controlador.Listar_Reservas_Pendientes = async(req, res) => {
     var sesion_persona = req.session.user.identificacion;
+    let limite = req.body.limite;
+    if(!limite) limite = 1000;
     let sql1 = `SELECT * FROM listamovimientos 
     where identificacion_m = '${sesion_persona}' 
     or identificacion = '${sesion_persona}'
-    ORDER BY Estado ASC`;
+    ORDER BY Estado ASC 
+    LIMIT ${limite}`;
     try {
         let rows = await query(sql1);
         return res.json(rows);
@@ -92,9 +95,9 @@ controlador.Registrar_Detalle = async(req, res) => {
             });
         }
         
-
+        // VALIDAR POR MOVIMIENTO Id_movimiento = '${movimiento}' and
         let cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
-        where Id_movimiento = '${movimiento}' and Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${persona}';`
+        where Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${persona}';`
         let cantidadPdto_Rows = await query(cantidadPdto);
         if ((parseInt(cantidadPdto_Rows[0].cantidad) + parseInt(cantidad)) > parseInt(producto_row[0].MaxReserva)) return res.json({
             titulo: "Reserva superada",
@@ -102,6 +105,7 @@ controlador.Registrar_Detalle = async(req, res) => {
             text: "Has superado el límite máximo de reserva"
         });
     
+
         
         var precioProducto = rows[0].precio;
         if(!subtotal) subtotal = precioProducto * cantidad;

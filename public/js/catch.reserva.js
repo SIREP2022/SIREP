@@ -32,7 +32,7 @@ input.addEventListener('keyup', e => {
 
 function Listar_todos_Productos() {
     fetch('/ListarTodosProductos', {
-        method: 'get',
+        method: 'POST',
         headers: { 'Authorization': 'Bearer ' + token }
     })
     .then(res => res.json())
@@ -110,9 +110,7 @@ function Render_Productos(data) {
             } else {
                 card_product += `<div class='card-footer'>
                             <a class='btn btn-primary'
-                            href="javascript:Abrir_Frm_Reserva('${lista.producto}',
-                            '${lista.id_inventario}', '${lista.precio-descuento}','${lista.stock}', '${lista.MaxReserva}', 
-                            '${lista.reservados}', '${lista.control_inventario}');">
+                            href="javascript:Abrir_Frm_Reserva('${lista.producto}', '${lista.id_inventario}', '${lista.precio-descuento}','${lista.stock}', '${lista.MaxReserva}', '${lista.reservados}', '${lista.control_inventario}', '${lista.reserva_grupal}');">
                             Reservar</a>
                             </div>`;
             }
@@ -132,7 +130,7 @@ var myModal = new bootstrap.Modal(document.getElementById('myModal'), {
     keyboard: false
 });
 /* ========FUNCION ABRIR============= */
-function Abrir_Frm_Reserva(nombre, id, precio, stock, maxReserva, reservados, control_inventario) {
+function Abrir_Frm_Reserva(nombre, id, precio, stock, maxReserva, reservados, control_inventario, res_grupal) {
     if(!reservados || reservados == null) reservados = 0;
     document.getElementById('name').innerHTML = nombre;
     document.getElementById('cod_prod').value = id;
@@ -143,7 +141,10 @@ function Abrir_Frm_Reserva(nombre, id, precio, stock, maxReserva, reservados, co
     document.getElementById('stockProd').value = stock;
     document.getElementById('total').innerHTML = '$ ' + precio;
     document.getElementById('subtotal').value = precio;
+    document.getElementById('reserva_grupal').value = res_grupal;
     let ficha = document.getElementById('ficha').value;
+    if(res_grupal == 'Si') document.getElementById('persona-reserva').setAttribute('style', 'display:block')
+    else document.getElementById('persona-reserva').setAttribute('style', 'display:none')
 
 
     Listar_Reservas_Pendientes(); // se lista las reserva pendiente
@@ -210,9 +211,9 @@ function RegistrarDetalle() {
     datos.append('id_movimiento', id_movimiento);
     datos.append('subtotal', subtotal);
 
-
     if (tipo_res == 'Grupal') {
         let persona = document.getElementById('persona-reserva').value;
+        if(!persona) persona = document.getElementById('ident').value;
         datos.append('persona', persona);
     } else {
         let persona = document.getElementById('ident').value;
@@ -261,7 +262,7 @@ function listarUsuaiosFicha(idFicha) {
         }
     }).then(res => res.json())
         .then(data => {
-            let row = '';
+            let row = '<option value="">Selecciona aprendiz</option>';
             data.forEach(e => {
                 row += '<option value="' + e.identificacion + '">';
                 row += +e.identificacion + ' | ' + e.Nombres;
