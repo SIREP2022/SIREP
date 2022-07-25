@@ -5,7 +5,6 @@ const auth = require('../middlewares/middleware.auth');
 
 ruta_reserva.get('/historial-reservas', auth.authRoute, cont_reserva.Historial)
 ruta_reserva.get("/Listar_Reservas_Pendientes", auth.authToken, cont_reserva.Listar_Reservas_Pendientes);
-ruta_reserva.post("/Buscar_Producto", auth.authToken, cont_reserva.Buscar_Producto);
 ruta_reserva.post("/Crear_Movimiento", auth.authToken, cont_reserva.Crear_Movimiento);
 ruta_reserva.post("/Listar_Usuaios_Ficha", auth.authToken, cont_reserva.Listar_Usuaios_Ficha);
 ruta_reserva.post("/Registrar_Detalle", auth.authToken, cont_reserva.Registrar_Detalle);

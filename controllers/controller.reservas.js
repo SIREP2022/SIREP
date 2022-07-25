@@ -10,7 +10,7 @@ controlador.Listar_Todos_Productos = async(req, res) => {
     //He agregado los campos 'medida', 'tipoempaque' para mostrar
     let sql = `select id_inventario,Producto as producto,descripcion,tipo,imagen,
     reserva,stock,MaxReserva, hora_inicio, hora_fin, nomb_up as up, medidas, control_inventario,
-    promocion, porcentaje, precio, Nombre as pv,
+    promocion, porcentaje, precio, Nombre as pv, reserva_grupal,
     (SELECT SUM(cantidad) FROM detalle d WHERE d.fk_id_inventario = id_inventario and d.estado = 'Reservado') as reservados
     from lista_productos 
     where idcargo = ${sesion_Cargo} order by Producto` ;
@@ -25,16 +25,6 @@ controlador.Listar_Todos_Productos = async(req, res) => {
 }
 
 controlador.Abrir_Frm_Reserva = (req, res) => { res.render('reservas/reserva.ejs', { profile: req.session.user }) }
-controlador.Buscar_Producto = async(req, res) => {
-    let name = req.body.Codigo;
-    let sql = "select Nombre from producto where Codigo_pdto=" + name;
-    try {
-        let rows = await query(sql);
-        return res.json(rows);
-    } catch (e) {
-        console.log(e)
-    }
-}
 
 controlador.Crear_Movimiento = async(req, res) => {
     var sesion_persona = req.session.user.identificacion;
@@ -49,7 +39,10 @@ controlador.Crear_Movimiento = async(req, res) => {
 
 controlador.Listar_Reservas_Pendientes = async(req, res) => {
     var sesion_persona = req.session.user.identificacion;
-    let sql1 = `SELECT * FROM listamovimientos where identificacion = '${sesion_persona}' ORDER BY Estado ASC`;
+    let sql1 = `SELECT * FROM listamovimientos 
+    where identificacion_m = '${sesion_persona}' 
+    or identificacion = '${sesion_persona}'
+    ORDER BY Estado ASC`;
     try {
         let rows = await query(sql1);
         return res.json(rows);

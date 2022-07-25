@@ -183,26 +183,6 @@ function Disminuir() {
         document.getElementById('subtotal').value = Subtotal;
     }
 }
-
-function Buscar_Producto(name, id) {
-    var datos = new URLSearchParams();
-    datos.append('Codigo', name);
-
-    fetch('/Buscar_Producto', {
-        method: 'post',
-        body: datos,
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
-    })
-        .then(res => res.json())
-        .then(data => {
-            data.forEach(pdto => {
-                document.getElementById('name').value = pdto.Nombre;
-            });
-            Abrir_Frm_Reserva(name, id);
-        });
-}
 /* ===================registro reserva=============== */
 function RegistrarDetalle() {
     /* ======================= */
