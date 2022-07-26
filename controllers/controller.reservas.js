@@ -103,10 +103,12 @@ controlador.Registrar_Detalle = async(req, res) => {
         let cantidadPdto = '';
         if(producto_row[0].valida_categoria == 'Si'){
             cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
-            where id_categoria = '${producto_row[0].id_categoria}' and identificacion = '${persona}'`;
+            where id_categoria = '${producto_row[0].id_categoria}' and identificacion = '${persona}'
+            and Estado = 'Reservado'`;
         } else {
             cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
-            where Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${persona}'`;
+            where Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${persona}'
+            and Estado = 'Reservado'`;
         }
         let cantidadPdto_Rows = await query(cantidadPdto);
         if ((parseInt(cantidadPdto_Rows[0].cantidad) + parseInt(cantidad)) > parseInt(producto_row[0].MaxReserva)) return res.json({
