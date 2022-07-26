@@ -82,7 +82,7 @@ function Crear_Movimiento(){
 }
 function Listar_Reservas_Pendientes(){
     let datos = new URLSearchParams();
-    datos.append('limite', 10);
+    datos.append('limite', 30);
     fetch('/Listar_Reservas_Pendientes',{
         method:'post',
         body: datos,

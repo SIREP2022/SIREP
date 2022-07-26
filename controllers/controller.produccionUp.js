@@ -5,7 +5,9 @@ const query = require('../database/pool-conexion');
 controlador.Listar_Produccion = async (req,res)=>{
     try{
         var idup = req.body.unidad;
-        var sql = `select Id_produccion,Cantidad,DATE_FORMAT(produccion.fecha,'%d-%m-%Y') as fecha,Observacion, productos.Nombre from produccion join productos on Codigo_pdto = fk_codigo_pdto where fk_codigo_up='${idup}'`;
+        var sql = `select Id_produccion,Cantidad,DATE_FORMAT(produccion.fecha,'%d-%m-%Y') as fecha,
+        Observacion, productos.Nombre, productos.Descripcion
+        from produccion join productos on Codigo_pdto = fk_codigo_pdto where fk_codigo_up='${idup}'`;
         let rows = await query(sql);
         return res.json(rows);
     }
@@ -16,7 +18,12 @@ controlador.Listar_Produccion = async (req,res)=>{
 // ======================= Listar Productos =================================
 controlador.llamarproductos = async(req,res)=>{
     let  unidadproductiva = req.body.codigoup;
-    let sql = `select unidades_productivas.Nombre as nameup, productos.Nombre as Namepdto, productos.Codigo_pdto as Codigo_pdto  from productos join unidades_productivas on codigo_up=fk_codigo_up where fk_codigo_up ='${unidadproductiva}'`; 
+    let sql = `select unidades_productivas.Nombre as nameup, 
+    productos.Nombre as Namepdto, 
+    productos.Descripcion as Descpdto,
+    productos.Codigo_pdto as Codigo_pdto  
+    from productos join unidades_productivas on codigo_up=fk_codigo_up 
+    where fk_codigo_up ='${unidadproductiva}'`; 
     let rows = await query(sql);
     res.json(rows);
 }

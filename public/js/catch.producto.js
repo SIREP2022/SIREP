@@ -13,9 +13,6 @@ function MostrarRegistroproductos() {
     modalproductosregistro.show();
 }
 
-function MostrarProductoseleccionado() {
-    modalproductosactualizar.show();
-}
 /*Validacion del campo de descuento*/
 let campoDescuento = document.getElementById('descCont').value;
 if (campoDescuento == 'Activo') {
@@ -150,6 +147,7 @@ function ListaProductos() {
 }
 
 function Buscarproductos(ident) {
+    document.getElementById('fileNact').value = '';
     modalproductosactualizar.show();
     var datos = new URLSearchParams();
     datos.append('Identificacion', ident);

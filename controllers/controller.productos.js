@@ -53,7 +53,7 @@ controlador.RegistrarProductos = async(req, res) => {
         if(!reserva_grupal) reserva_grupal = 'No';
         if(!porcentaje) porcentaje = 0;
         let sql = `insert into productos (Nombre,Descripcion,imagen,Estado,Reserva,MaxReserva,
-            Tipo,fk_codigo_up,hora_inicio, hora_fin,inventario,medidas, promocion, porcentaje, 'ReservaGrupal') 
+            Tipo,fk_codigo_up,hora_inicio, hora_fin,inventario,medidas, promocion, porcentaje, ReservaGrupal) 
             values('${nombre}','${Descripcion}','${imagen}','${estado}','${Reserva}','${Maximo}','${tipo}','${up}','${horastart}',
             '${horaend}','${inventario}','${medida}','${promocion}','${porcentaje}', '${reserva_grupal}')`;
 

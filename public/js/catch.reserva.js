@@ -98,21 +98,22 @@ function Render_Productos(data) {
                 ${descuento_info}
                 ${stock_info}
                 ${up_info}
-                <p class="card-text"><label class="info_pdto">Sitio: </label> ${lista.up}</p>
+                <p class="card-text"><label class="info_pdto">Sitio: </label> ${lista.pv}</p>
             </div>
             </div> `;
         if (!lista.MaxReserva) lista.MaxReserva = lista.maxreserva;
         if (lista.reserva == 'Si' && (timeHour >= lista.hora_inicio)) {
             if (timeHour >= lista.hora_inicio && timeHour >= lista.hora_fin) {
+                card_product += `<div class='card-footer'><span style="border: 10px;  color: rgb(224, 64, 64);">Tiempo de reserva superado</span></div>`;
+            } else if(reservados >= lista.stock){
+                card_product += `<div class='card-footer'><span style="border: 10px;  color: rgb(224, 64, 64);">No hay reservas disponibles</span></div>`
+            } 
+            else {
                 card_product += `<div class='card-footer'>
-                                <span style="border: 10px;  color: rgb(224, 64, 64);">Tiempo de reserva superado</span> 
-                            </div>`;
-            } else {
-                card_product += `<div class='card-footer'>
-                            <a class='btn btn-primary'
-                            href="javascript:Abrir_Frm_Reserva('${lista.producto}', '${lista.id_inventario}', '${lista.precio-descuento}','${lista.stock}', '${lista.MaxReserva}', '${lista.reservados}', '${lista.control_inventario}', '${lista.reserva_grupal}');">
-                            Reservar</a>
-                            </div>`;
+                <a class='btn btn-primary'
+                href="javascript:Abrir_Frm_Reserva('${lista.producto}', '${lista.id_inventario}', '${lista.precio-descuento}','${lista.stock}', '${lista.MaxReserva}', '${lista.reservados}', '${lista.control_inventario}', '${lista.reserva_grupal}');">
+                Reservar</a>
+                </div>`;
             }
         }
         card_product += `</div>`;

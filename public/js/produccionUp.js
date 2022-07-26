@@ -36,7 +36,7 @@ function mostrarproductos (idunida){
         });
         let html = '';
         for(let i =0; i<data.length; i++){
-            html += '<option value="'+data[i].Codigo_pdto+'" class="visible">'+data[i].Namepdto+'</option>'
+            html += `<option value="${data[i].Codigo_pdto}" class="visible">${data[i].Namepdto} ${data[i].Descpdto}</option>`;
         }
         document.getElementById('pdto').innerHTML = html;
     });
@@ -87,7 +87,7 @@ function Listar_Produccion(){
         var tabla='';
         for(var i=0; i<data.length;i++){
             tabla += '<tr ><td class="infocenter">'+data[i].Id_produccion+'</td>';
-            tabla += '<td class="infocenter">'+data[i].Nombre+'</td>';
+            tabla += '<td class="infocenter">'+data[i].Nombre+' '+data[i].Descripcion+'</td>';
             tabla += '<td class="infocenter">'+data[i].fecha+'</td>';
             tabla += '<td class="infocenter">'+data[i].Cantidad+'</td>';
             tabla += '<td class="infocenter">'+data[i].Observacion+'</td>';
@@ -167,11 +167,11 @@ function EditarProduccion(){
         if(data.status == 401) return console.log(data)
         myModal.hide();
          Swal.fire({
-                    title: data.titulo,
-                    icon: data.icono,
-                    text: data.mensaje,
-                    showConfirmButton: false,
-                    timer: 1800
+            title: data.titulo,
+            icon: data.icono,
+            text: data.mensaje,
+            showConfirmButton: false,
+            timer: 1800
         })
         myModal2.hide();
     });

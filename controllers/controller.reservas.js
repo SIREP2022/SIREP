@@ -80,7 +80,10 @@ controlador.Registrar_Detalle = async(req, res) => {
         let rows = await query(sql);
         let rows2 = await query(porcentajedb);
         
-        let producto = `SELECT Codigo_pdto, MaxReserva, inventario FROM inventario i join productos p on i.fk_codigo_pdto = Codigo_pdto where id_inventario = '${inventario}';`
+        let producto = `SELECT Codigo_pdto, p.fk_categoria as id_categoria, p.valida_categoria,
+        MaxReserva, inventario 
+        FROM inventario i join productos p on i.fk_codigo_pdto = Codigo_pdto 
+        where id_inventario = '${inventario}';`
         let producto_row = await query(producto);
         if (producto_row[0].MaxReserva < cantidad) return res.json({
             titulo: "Reserva superada",
@@ -95,9 +98,16 @@ controlador.Registrar_Detalle = async(req, res) => {
             });
         }
         
-        // VALIDAR POR MOVIMIENTO Id_movimiento = '${movimiento}' and
-        let cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
-        where Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${persona}';`
+        // VALIDAR POR MOVIMIENTO Id_movimiento = '${movimiento}' 
+        // VALIDA SI EL PRODUCTO TIENE UNA CATEGORIA
+        let cantidadPdto = '';
+        if(producto_row[0].valida_categoria == 'Si'){
+            cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
+            where id_categoria = '${producto_row[0].id_categoria}' and identificacion = '${persona}'`;
+        } else {
+            cantidadPdto = `SELECT sum(cantidad) as cantidad FROM listamovimientos 
+            where Codigo_pdto = '${producto_row[0].Codigo_pdto}' and identificacion = '${persona}'`;
+        }
         let cantidadPdto_Rows = await query(cantidadPdto);
         if ((parseInt(cantidadPdto_Rows[0].cantidad) + parseInt(cantidad)) > parseInt(producto_row[0].MaxReserva)) return res.json({
             titulo: "Reserva superada",
