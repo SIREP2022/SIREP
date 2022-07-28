@@ -365,7 +365,7 @@ header > nav::-webkit-scrollbar-track {
 }
 .btn-primary{
 	color: white;
-	background-color: #40a3ff;
+	background-color: #2388e7;
 }
 /* Breadcrumb */
 .breadcrumb{
@@ -689,5 +689,10 @@ select {
 	}
 	.item-list{
 		grid-template-columns: repeat(2, 1fr);
+	}
+	#profile {
+		max-width: 224px;
+		font-size: .8rem;
+		overflow: hidden;
 	}
 }

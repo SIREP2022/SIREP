@@ -38,7 +38,7 @@
                             </div>
                             <div class="col-sm-4">
                                 <div class="md-form mt-0">
-                                    <input class="form-control" type="text" placeholder="Buscar productos pendientes" aria-label="Search" id="identificacion">
+                                    <input class="form-control" type="text" placeholder="Buscar entregas pendientes" aria-label="Search" id="identificacion">
                                 </div>
                             </div>
                             <div class="col-sm-1">
@@ -189,6 +189,7 @@
             .then(res => {
                 if(res.status == 401) return Error401();
                 renderTabla(res, 'reclamados');
+                if(res.length <= 0) return SwalAlert({title: '¡El usuario no tiene entregas pendientes!', icon: 'error', timer: 1000});
                 identificacion.value = '';
                 identificacion.focus()
             }).catch(e=>{
@@ -306,14 +307,17 @@
             })
             
         }
-
-        function Error401(){
+        function SwalAlert(data){
+            if(!data.timer) data.timer = 1500;
             Swal.fire({
-                title: 'Error 401',
-                icon: 'error',
-                text: 'No autorizado',
-                timer : 1500
+                title: data.title,
+                icon: data.icon,
+                text: data.text,
+                timer : data.timer
             })
+        } 
+        function Error401(){
+            SwalAlert({title: 'Error', icon: 'error', text: 'No autorizado'});
         }
     </script>
 </body>

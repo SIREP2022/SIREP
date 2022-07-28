@@ -156,11 +156,12 @@ controladorMovimiento.listarMovimientos = async (req, resp) => {
         let sql = `select m.Id_movimiento,date_format(m.Fecha, "%d-%m-%Y") as Fecha , m.Estado,
         (select Nombres from personas where m.fk_persona=personas.identificacion)as personas, 
         m.fk_persona as identificacion,
-        (select sum(subtotal) from detalle where fk_Id_movimiento = m.Id_movimiento) as total, 
+        (select sum(subtotal) from detalle where fk_Id_movimiento = m.Id_movimiento 
+        and (Estado = 'Facturado' or Estado = 'Reservado')) as total, 
         (SELECT COUNT(*) FROM detalle where m.Id_movimiento = detalle.fk_Id_movimiento) as detalles 
         from movimientos m LEFT JOIN detalle d ON d.fk_Id_movimiento = m.Id_movimiento 
         LEFT JOIN inventario i on i.id_inventario = d.fk_id_inventario 
-        where (m.estado='Reservado' or m.estado='Facturado') and i.fk_id_punto_vent = '${sesion_punto}' 
+        WHERE (m.estado = 'Reservado' or m.estado='Facturado') and i.fk_id_punto_vent = '${sesion_punto}' 
         GROUP BY Id_movimiento`;
         let rows = await query(sql);
         resp.json(rows);
@@ -174,8 +175,10 @@ controladorMovimiento.mostrarDetalle = async (req, resp) => {
     var sesion_punto = req.session.user.pv;
     let sql = `SELECT Codigo_pdto, id_detalle, producto as Nombre, cantidad as Cantidad, 
     identificacion, Nombres, valor as VlrUnit, porcentaje, subtotal as VlrTotal, Estado as EstadoVenta, 
-    Entregado, num_factura
-    FROM listamovimientos where Id_movimiento = '${id_movimiento}' and id_punto_vent = '${sesion_punto}'`;
+    Estado_mov as EstadoMov, Entregado, num_factura
+    FROM listamovimientos 
+    where Id_movimiento = '${id_movimiento}' and id_punto_vent = '${sesion_punto}'
+    and (Estado = 'Reservado' or Estado='Facturado') `;
     try {
         let rows = await query(sql);
         resp.json(rows);

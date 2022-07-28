@@ -1,4 +1,4 @@
-#modalRegistro{
+#modalRegistro, #modalPermisoAdmin, #modaleditar{
     background: rgba(0, 0, 0, 0.5);
 }
 
@@ -303,16 +303,13 @@ label {
 
 #delBtn {
     border: none;
-    border-radius: 5px;
-    background-color: rgb(255, 30, 0);
-    width: 30px;
-    height: 30px;
+    font-size: .8rem;
 }
 
 #delBtn span {
     line-height: 1.5em;
     color: white;
-    font-size: 1.5em;
+    font-size: 1rem;
 }
 
 #ver-precios {

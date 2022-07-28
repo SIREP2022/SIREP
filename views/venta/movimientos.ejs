@@ -82,7 +82,7 @@
           </div>
           <div class="modal-body">
             <form action="/genFactura" method="post" class="row g-3 needs-validation">
-              <div class="col-md-12">
+              <div class="col-md-12" > 
                 <table id="tableFacturar" class="display">
                   <thead>
                     <tr>
@@ -125,30 +125,34 @@
             <div class="row">
               <div class="col-lg-8">
                 <div class="row">
-                  <div class="col-md-6" id="divBtnAdd">
-
-                  </div>
+                  <div class="col-md-6" id="divBtnAdd"></div>
                   <div class="col-md-6">
                     <label for="">Movimiento</label>
                     <input type="text" id="id_movimiento" disabled="disabled" class="form-control">
                   </div>
                 </div>
-                <table id="tableCart" class="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>ID. Prod</th>
-                      <th>Persona</th>
-                      <th>Nombre del Producto</th>
-                      <th>Cantidad</th>
-                      <th>Valor Unit.</th>
-                      <th>Valor Total</th>
-                      <th>Detalle</th>
-                      <th>Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-
-                </table>
+                <div class="row">
+                  <div class="col-md-12" 
+                    style="max-height: 400px; margin: 10px 0; overflow-y: scroll;">
+                    <table id="tableCart" class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>ID. Prod</th>
+                          <th>Persona</th>
+                          <th>Nombre del Producto</th>
+                          <th>Cantidad</th>
+                          <th>Valor Unit.</th>
+                          <th>Valor Total</th>
+                          <th>Detalle</th>
+                          <th>Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+    
+                    </table>
+                  </div>
+                </div>
+                
                 <div class="row" id="botones-accion-movimiento">
                 </div>
               </div>
@@ -429,7 +433,7 @@
             </div>
             <div class="mb-3">
               <label class="form-label">Password</label>
-              <input class="form-control" type="text" id="password_admin">
+              <input class="form-control" type="password" id="password_admin">
             </div>
             <div class="mt-1" id="error_msg">
             </div>

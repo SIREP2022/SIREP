@@ -1,5 +1,11 @@
-var detallesListados = [];
 window.onload = listarMovimientos;
+var modalRechazarMovimiento = new bootstrap.Modal(document.getElementById('modalRechazarMovimiento'), { keyboard: false });
+var modalPermisoAdmin = new bootstrap.Modal(document.getElementById('modalPermisoAdmin'), {keyboard: false});
+var facturar = new bootstrap.Modal(document.getElementById('modalFacturar'), { keyboard: false });
+var newVenta = new bootstrap.Modal(document.getElementById('modalNewVenta'), { keyboard: false });
+var detalleModal = new bootstrap.Modal(document.getElementById('modalNewVenta'), { keyboard: false });
+var modaleditar = new bootstrap.Modal(document.getElementById('modaleditar'), { keyboard:false});
+
 function crearFields(){
     document.getElementById("id_movimiento").value = '';
     document.getElementById("inputPIdCliente").value = '';
@@ -9,13 +15,13 @@ function crearFields(){
     renderTableCart([]);
 }
 
-var facturar = new bootstrap.Modal(document.getElementById('modalFacturar'), { keyboard: false });
+
 function compranueva() {
     facturar;
     facturar.toggle();
 }
 
-var newVenta = new bootstrap.Modal(document.getElementById('modalNewVenta'), { keyboard: false });
+
 
 function nuevaVenta() {
     let btn = document.getElementById('sbutton');
@@ -23,7 +29,7 @@ function nuevaVenta() {
     crearFields();
     newVenta.toggle();
 }
-var modalRechazarMovimiento = new bootstrap.Modal(document.getElementById('modalRechazarMovimiento'), { keyboard: false });
+
 function RechazarMovimiento(id){
     document.getElementById('movimiento_rechazar').value = id;
     modalRechazarMovimiento.show();
@@ -115,79 +121,6 @@ function renderTableMovimientos(datos){
     })
 }
 /* ============================detalle de la venta=================================== */
-var detalleModal = new bootstrap.Modal(document.getElementById('modalNewVenta'), { keyboard: false });
-
-function listarDetalle (Id_movimiento, tipo){
-    var datos = new URLSearchParams();
-    datos.append("idcodigo", Id_movimiento);
-    fetch('/listarDetalle/'+Id_movimiento, {
-        method: 'get',
-        headers: {
-            'Authorization': 'Bearer '+ token,
-        }
-    }).then(res => res.json())
-    .then((data) => {
-        this.detallesListados = data;
-        let productosMovimiento = [];
-        let i = 1;
-        data.forEach((producto) => {
-            if (producto.id_detalle == null) return;
-            let detalle = '';
-            let accion = ' <div class="btn-group" style="width: 100%;">';
-            
-            if(producto.Entregado != 'Entregado') {
-                detalle += "<span class='span-rojo'>Sin entregar</span>"
-             } else {
-                detalle += "<span class='span-verde'>Entregado</span>"
-            } 
-            if(tipo == 'facturado') {
-                if(producto.EstadoVenta != 'Facturado') {
-                    accion += `<button class="btn btn-primary" onclick="Factura('`+producto.id_detalle +`')" style="width:80px;>
-                    <span class="">Facturar</span> </button>`
-                } 
-                accion += `<button onclick="modalEditar('`+producto.id_detalle +`', '${producto.EstadoVenta}')" class="btn btn-secondary icon-edit-pencil" style="width:50px; height:38px; font-size:17px"></button>`
-            } else {
-                accion = `<button id='delBtn' onclick="eliminarProductoMovimiento('` +
-                producto.id_detalle +
-                    `')">
-                    <span class="icon-trash1"></span>
-                </button>`
-            }
-            accion += '</div>';
-            let arrayProducto = {
-                num: i++,
-                persona: producto.Nombres,
-                nombre: producto.Nombre,
-                cantidad: producto.Cantidad,
-                valor: producto.VlrUnit,
-                subtotal: producto.VlrTotal,
-                detalle: detalle,
-                accion: accion,
-            };
-            productosMovimiento.push(arrayProducto);
-        });
-        if(productosMovimiento.length <= 0) {document.getElementById('botones-accion-movimiento').innerHTML = '';}
-        else {
-            if(tipo == 'facturado') {
-                var divBTN = document.getElementById('botones-accion-movimiento');
-                divBTN.innerHTML = `
-                <div class="row" id="botones-accion-movimiento">
-                    <div class="col-md-6"><button class="btn btn-primary" style="width: 100%;" onclick="ImprimirFactura()">Finalizar</button></div>
-                    <div class="col-md-6"><button class="btn btn-primary bg-danger" style="width: 100%;" onclick="AnularDetalles()">Anular</button></div>
-                </div>`;
-            } else {
-                document.getElementById('botones-accion-movimiento').innerHTML = `
-                <div class="col-12" id="regUserDiv">
-                    <button onclick="Remplazofactura()" class="btn btn-primary">Facturar</button>
-                </div>`
-            }
-
-        }
-        renderTableCart(productosMovimiento)
-        listarMovimientos();
-    })
-    
-}
 function mostrarDetalle(Id_movimiento,personas,identificacion) {
     document.getElementById('id_movimiento').value = Id_movimiento;
     document.getElementById('nombre').value = personas;
@@ -201,23 +134,19 @@ function mostrarDetalle(Id_movimiento,personas,identificacion) {
     if(btnProductos) btnProductos.setAttribute('style', 'display:none');
     detalleModal.show();
 }
-var modaleditar = new bootstrap.Modal(document.getElementById('modaleditar'), { keyboard:false});
 
 function editarReserva(){
-    modaleditar;
     modaleditar.toggle();
 }
 /* ===================modal editar============ */
-function modalEditar(id_detalle, estado){
+function modalEditar(id_detalle){
     var datos= new URLSearchParams();
     datos.append('Codigo_pdto',id_detalle);
     modaleditar.show();
     fetch('/botoneditar',{
         method: 'post',
         body:datos,
-        headers: {
-            'Authorization': 'Bearer '+ token,
-        }
+        headers: {'Authorization': 'Bearer '+ token}
     }
     ).then(res=>res.json())
     .then(data=>{
@@ -228,7 +157,7 @@ function modalEditar(id_detalle, estado){
         document.getElementById('ID_detalle').value = data.id_detalle;
 
         let cantidad = document.getElementById('cantidad');
-        if(estado == 'Facturado'){
+        if(this.movimientoVenta.estado == 'Facturado'){
             cantidad.setAttribute('disabled', 'disabled')
         } else {
             cantidad.removeAttribute('disabled')
@@ -314,19 +243,6 @@ function alertaGlobal(){
 }
 
 
-function EstadoAnulado(id_detalle) {
-    var datos = new URLSearchParams();
-    datos.append("id_detalle",id_detalle)
-    fetch('/EstadoAnulado', {
-        method: 'post',
-        body: datos,
-        headers: {
-            'Authorization': 'Bearer '+ token,
-        }
-    }).then(res => res.json())
-    .then();
-}
-
 function AnularMovimiento(id_movimiento) {
     var datos = new URLSearchParams();
     datos.append("Id_movimiento",id_movimiento)
@@ -347,27 +263,9 @@ function AnularMovimiento(id_movimiento) {
 }
 
 function AnularDetalles(){
+    document.getElementById('login_admin').value = '';
+    document.getElementById('password_admin').value = '';
     modalPermisoAdmin.show()
-  /*   Swal.fire({
-        title: '¿Estas seguro que deseas anular este movimiento?',
-        showDenyButton: true,
-        showCancelButton: false,
-        confirmButtonText: 'Confirmar',
-        denyButtonText: `Cancelar`,
-    }).then((result) => {
-        if (result.isConfirmed) {
-            let movimiento = document.getElementById('id_movimiento').value;
-            AnularMovimiento(movimiento);
-            Swal.fire({
-                icon: 'success',
-                title: 'Movimiento anulado exitosamente',
-                showConfirmButton: false,
-                timer: 1000
-            })
-            newVenta.hide();
-            detalleModal.hide();
-        } 
-    }) */
 }
 function ImprimirFactura(){
     let message = '<p>';
@@ -405,7 +303,7 @@ function ImprimirFactura(){
     })
 }
 
-var modalPermisoAdmin = new bootstrap.Modal(document.getElementById('modalPermisoAdmin'), {keyboard: false});
+
 function validarAdmin(){
     let login = document.getElementById('login_admin').value;
     let password = document.getElementById('password_admin').value;

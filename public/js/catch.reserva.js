@@ -105,7 +105,7 @@ function Render_Productos(data) {
         if (lista.reserva == 'Si' && (timeHour >= lista.hora_inicio)) {
             if (timeHour >= lista.hora_inicio && timeHour >= lista.hora_fin) {
                 card_product += `<div class='card-footer'><span style="border: 10px;  color: rgb(224, 64, 64);">Tiempo de reserva superado</span></div>`;
-            } else if(reservados >= lista.stock){
+            } else if(reservados >= lista.stock && lista.control_inventario == 'Si'){
                 card_product += `<div class='card-footer'><span style="border: 10px;  color: rgb(224, 64, 64);">No hay reservas disponibles</span></div>`
             } 
             else {

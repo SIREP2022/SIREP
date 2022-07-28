@@ -78,7 +78,10 @@ controller.listarPorEntregar = async (req, res) => {
 }
 controller.cantidadPendiente = async (req, res) => {
     var IdUP = req.session.user.up_id; //SESION DE USUARIO
-    let sql = `SELECT COUNT(*) as cantidad FROM listamovimientos WHERE codigo_up = '${IdUP}' and Estado = 'Facturado' and Entregado = 'No Entregado';`
+    let sql = `SELECT COUNT(*) as cantidad FROM listamovimientos lm
+    JOIN movimientos m on lm.Id_movimiento = m.Id_movimiento 
+    WHERE codigo_up = '${IdUP}' and 
+    m.Estado = 'Facturado' and lm.Estado = 'Facturado' and lm.Entregado = 'No Entregado';`
     let rows = await query(sql);
     return res.json(rows);
 }

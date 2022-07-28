@@ -1,3 +1,11 @@
+var detallesListados = [];
+/* ======VARIABLE DE MANEJO DEL MOVIMIENTO======= */
+var movimientoVenta = {
+    id: null,
+    estado: null
+}
+let comprador = document.getElementById('inputPIdCliente')
+
 $(document).ready(function () {
     $("#modalNewVenta").on("hidden.bs.modal", function () {
         document.getElementById("inputPIdCliente").value = "";
@@ -204,11 +212,6 @@ function ocultarButtonConfirmar() {
 
     }
 }
-
-
-
-
-
 /* ===================buscar clientes================== */
 document
     .getElementById("inputPIdCliente")
@@ -226,44 +229,42 @@ function buscarUser() {
         body: datos,
         headers: {'Authorization': 'Bearer ' + token}
     })
-        .then((res) => res.json())
-        .then((data) => {
-            if (data.status == 401) return console.log(data)
-            // AQUÍ LANZA EL MODAL PARA CREAR USUARIO============================
-            if (data.length <= 0) {
-                document.getElementById("nombre").value = "Usuario no registrado.";
-                document.getElementById("nombre").value = "Cargo.";
-                registroCliente();
-                let btnProductos = document.getElementById("boton_agregar_productos");
-                btnProductos.disabled = true;
-                btnProductos.setAttribute('id', 'btn-deshabilitado');
-            }
+    .then((res) => res.json())
+    .then((data) => {
+        if (data.status == 401) return console.log(data)
+        // AQUÍ LANZA EL MODAL PARA CREAR USUARIO============================
+        if (data.length <= 0) {
+            document.getElementById("nombre").value = "Usuario no registrado.";
+            document.getElementById("cargo").value = "Cargo.";
+            registroCliente();
+            let btnProductos = document.getElementById("boton_agregar_productos");
+            btnProductos.disabled = true;
+            btnProductos.setAttribute('id', 'btn-deshabilitado');
+        }
 
-            /* ====VARIABLES===== */
-            var identificacion = data[0].identificacion;
-            var nombre = data[0].Nombres;
-            var cargo_usuario = data[0].Cargo;
-            console.log(data[0]);
-            var nombre_cargo = data[0].nombre_cargo;
-            if (identificacion != iden) {
-                document.getElementById("nombre").value = "Usuario no registrado.";
-                document.getElementById("nombre").value = "Cargo";
-                document.getElementById("genVenDiv").innerHTML =
-                    '<input type="button" class="btn btn-primary btndone" onclick="" value="Registrar Usuario?">';
-                $("#tableAddProd").DataTable({
-                    bInfo: false,
-                    destroy: true,
-                });
-            } else if (identificacion == iden) {
-                document.getElementById("nombre").value = nombre;
-                document.getElementById("cargo_nombre").value = nombre_cargo;
-                document.getElementById("cargo-usuario").value = cargo_usuario;
-                document.getElementById('divBtnAdd').innerHTML = '<input type="button" id="boton_agregar_productos" class="btn btn-primary btnadd" onclick="addProdVen();" value="Agregar Productos" />';
-
-            }
-            generarVenta(iden);
-        })
-        .catch((e) => console.log(e));
+        /* ====VARIABLES===== */
+        var identificacion = data[0].identificacion;
+        var nombre = data[0].Nombres;
+        var cargo_usuario = data[0].Cargo;
+        var nombre_cargo = data[0].nombre_cargo;
+        if (identificacion != iden) {
+            document.getElementById("nombre").value = "Usuario no registrado.";
+            document.getElementById("nombre").value = "Cargo";
+            document.getElementById("genVenDiv").innerHTML =
+            '<input type="button" class="btn btn-primary btndone" onclick="" value="Registrar Usuario?">';
+            $("#tableAddProd").DataTable({
+                bInfo: false,
+                destroy: true,
+            });
+        } else if (identificacion == iden) {
+            document.getElementById("nombre").value = nombre;
+            document.getElementById("cargo_nombre").value = nombre_cargo;
+            document.getElementById("cargo-usuario").value = cargo_usuario;
+            document.getElementById('divBtnAdd').innerHTML = '<input type="button" id="boton_agregar_productos" class="btn btn-primary btnadd" onclick="addProdVen();" value="Agregar Productos" />';
+        }
+        generarVenta(iden);
+    })
+    .catch((e) => console.log(e));
 }
 /* =========VENTA============ */
 function eliminarProductoMovimiento(id) {
@@ -273,39 +274,34 @@ function eliminarProductoMovimiento(id) {
     fetch("/eliminarDetalle", {
         body: datos,
         method: "POST",
-        headers: {
-            'Authorization': 'Bearer ' + token,
+        headers: {'Authorization': 'Bearer ' + token,}
+    }).then((res) => res.json())
+    .then((res) => {
+        if (res.status == 401) return console.log(res)
+        if (res.status == 200) {
+            generarVenta(idenpPersona);
         }
-    })
-        .then((res) => res.json())
-        .then((res) => {
-            if (res.status == 401) return console.log(res)
-            if (res.status == 200) {
-                generarVenta(idenpPersona);
-            }
-        });
+    });
 }
-
+/* ============================= */
 function generarVenta(ident) {
     var datos = new URLSearchParams();
     datos.append("iden", ident);
-
     fetch("/genventa", {
         method: "post",
         body: datos,
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        }
+        headers: {'Authorization': 'Bearer ' + token}
+    }).then((res) => res.json())
+    .then((data) => {
+        if (data.status == 401) return res.json(data);
+        document.getElementById('id_movimiento').value = data[0].Id_movimiento;
+        listarDetalle(data[0].Id_movimiento);
+        listarMovimientos();
     })
-        .then((res) => res.json())
-        .then((data) => {
-            if (data.status == 401) return res.json(data)
-            document.getElementById('id_movimiento').value = data[0].Id_movimiento;
-            listarDetalle(data[0].Id_movimiento);
-            listarMovimientos();
-        })
-        .catch((e) => console.log(e));
+    .catch((e) => console.log(e));
 }
+
+
 $("#tableCart").DataTable({
     destroy: true,
     searching: false,
@@ -314,9 +310,11 @@ $("#tableCart").DataTable({
 });
 /* ==========================Cambiar de delete a Facturado==================0= */
 /*===================== swealer alerta============================== */
-function Remplazofactura() {
+function RealizarFactura() {
+    let validar = this.detallesListados.find(element => element.EstadoVenta == 'Reservado');
+    if(validar) return launchAlert({icon:'error', message: 'Valida los destalles pendientes antes de facturar'})
     Swal.fire({
-        title: 'Seguro quieres Facturar??',
+        title: '¿Seguro que quieres Facturar?',
         showDenyButton: true,
         showCancelButton: false,
         confirmButtonText: 'Confirmar Factura',
@@ -324,32 +322,24 @@ function Remplazofactura() {
     }).then((result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-            RemplazofacturaSwelart();
+            MostrarImprimirBTN();
             Swal.fire({
                 icon: 'success',
-                title: '    Factura Confirmada',
+                title: 'Factura Confirmada',
                 showConfirmButton: false,
                 timer: 1000
             })
-        } else if (result.isDenied) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Factura Celada',
-                showConfirmButton: false,
-                timer: 1000,
-            })
-        }
+        } 
     })
 }
 
-function RemplazofacturaSwelart() {
+function MostrarImprimirBTN() {
     var divBTN = document.getElementById('botones-accion-movimiento');
     divBTN.innerHTML = `
     <div class="row" id="botones-accion-movimiento">
-        <div class="col-md-6"><button class="btn btn-primary" style="width: 100%;" onclick="ImprimirFactura()">Finalizar</button></div>
+        <div class="col-md-6"><button class="btn btn-primary" style="width: 100%;" onclick="ImprimirFactura()">Imprimir</button></div>
         <div class="col-md-6"><button class="btn btn-primary bg-danger" style="width: 100%;" onclick="AnularDetalles()">Anular</button></div>
-    </div>
-    `;
+    </div>`;
 
     var ident = document.getElementById('inputPIdCliente').value;
     var Id_movimiento = document.getElementById('id_movimiento').value;
@@ -359,51 +349,133 @@ function RemplazofacturaSwelart() {
     fetch("/CambiarEstado", {
         method: "post",
         body: datos,
-        headers: {
-            'Authorization': 'Bearer ' + token,
-        }
+        headers: {'Authorization': 'Bearer ' + token,}
     })
-        .then((res) => res.json())
+    .then((res) => res.json())
+    .then((data) => {
+        if (data.status == 401) return res.json(data)
+        fetch('/listarDetalle/' + Id_movimiento, {
+            method: 'get',
+            headers: {'Authorization': 'Bearer ' + token}
+        }).then(res => res.json())
         .then((data) => {
-            if (data.status == 401) return res.json(data)
-            fetch('/listarDetalle/' + Id_movimiento, {
-                method: 'get',
-                headers: {
-                    'Authorization': 'Bearer ' + token,
+            let productosMovimiento = [];
+            if(data.length > 0){
+                this.movimientoVenta.id = document.getElementById('id_movimiento').value;
+                this.movimientoVenta.estado = data[0].EstadoMov;
+            }
+            let i = 1;
+            data.forEach((producto) => {
+                if (producto.id_detalle == null) return;
+                let detalle = '';
+                if (producto.Entregado != 'Entregado') {
+                    detalle += "<span class='span-rojo'>Sin entregar</span>"
+                } else {
+                    detalle += "<span class='span-verde'>Entregado</span>"
                 }
-            }).then(res => res.json())
-                .then((data) => {
-                    let productosMovimiento = [];
-                    let i = 1;
-                    data.forEach((producto) => {
-                        if (producto.id_detalle == null) return;
-                        let detalle = '';
-                        if (producto.Entregado != 'Entregado') {
-                            detalle += "<span class='span-rojo'>Sin entregar</span>"
-                        } else {
-                            detalle += "<span class='span-verde'>Entregado</span>"
-                        }
-                        if (!producto.Nombres) producto.Nombres = producto.Persona;
-                        let arrayProducto = {
-                            num: i++,
-                            persona: producto.Nombres,
-                            nombre: producto.Nombre,
-                            cantidad: producto.Cantidad,
-                            valor: producto.VlrUnit,
-                            subtotal: producto.VlrTotal,
-                            detalle: detalle,
-                            accion: `<button class="btn btn-primary" onclick="Factura('` + producto.id_detalle + `')" style="width:80px;>
-                            <span class="">Facturar</span>
-                        </button> <button onclick="modalEditar('`+ producto.id_detalle + `')" class="btn btn-primary icon-edit-pencil" style="width:50px; font-size:17px"></button>`,
-                        };
-                        productosMovimiento.push(arrayProducto);
-                    });
-                    renderTableCart(productosMovimiento);
-                    listarMovimientos();
-                });
+                if (!producto.Nombres) producto.Nombres = producto.Persona;
+                let arrayProducto = {
+                    num: i++,
+                    persona: producto.Nombres,
+                    nombre: producto.Nombre,
+                    cantidad: producto.Cantidad,
+                    valor: producto.VlrUnit,
+                    subtotal: producto.VlrTotal,
+                    detalle: detalle,
+                    accion: `<button class="btn btn-secondary icon-edit-pencil"  
+                    onclick="modalEditar('${producto.id_detalle}')" style="width:50px; height:38px; font-size:17px"></button>`
+                };
+                productosMovimiento.push(arrayProducto);
+            });
+            renderTableCart(productosMovimiento);
+            listarMovimientos();
+        });
         })
         .catch((e) => console.log(e));
 }
+function listarDetalle(Id_movimiento){
+    var datos = new URLSearchParams();
+    datos.append("idcodigo", Id_movimiento);
+    fetch('/listarDetalle/'+Id_movimiento, {
+        method: 'get',
+        headers: {'Authorization': 'Bearer '+ token,}
+    }).then(res => res.json())
+    .then((data) => {
+        let productosMovimiento = [];
+        this.detallesListados = data;
+        if(data.length > 0){
+            this.movimientoVenta.id = document.getElementById('id_movimiento').value;
+            this.movimientoVenta.estado = data[0].EstadoMov;
+        }
+        let i = 1;
+        data.forEach((producto) => {
+            if (producto.id_detalle == null) return;
+            let detalle = '';
+            let accion = ' <div class="btn-group" style="width: 100%;">';
+            if(producto.Entregado != 'Entregado') {
+                detalle += "<span class='span-rojo'>Sin entregar</span>"
+            } else {
+                detalle += "<span class='span-verde'>Entregado</span>"
+            } 
+            switch (producto.EstadoVenta) {
+                case 'Reservado':
+                    accion += `<button class="btn btn-secondary" onclick="Factura('${producto.id_detalle}')" style="width:80px;>
+                    <span class="">Facturar</span> </button>
+                    <button id='delBtn' class="btn btn-danger" onclick="eliminarProductoMovimiento('${producto.id_detalle}')">
+                        <span class="icon-trash1"></span>
+                    </button>`
+                    break;
+                case 'Facturado':
+                    accion += `<button class="btn btn-secondary icon-edit-pencil"  
+                    onclick="modalEditar('${producto.id_detalle}')" style="width:50px; height:38px; font-size:17px"></button>`;
+                    break;
+
+                default:
+                    break;
+            }
+            if(this.movimientoVenta.estado == 'Facturado') {
+
+            } else {
+                if(producto.EstadoVenta == 'Facturado'){
+                    accion += `<button class="btn btn-danger" 
+                    onclick="ConfirmarAnularDetalle(${producto.id_detalle})">Anular</button>`
+                }
+            }
+            accion += '</div>';
+            let arrayProducto = {
+                num: i++,
+                persona: producto.Nombres,
+                nombre: producto.Nombre,
+                cantidad: producto.Cantidad,
+                valor: producto.VlrUnit,
+                subtotal: producto.VlrTotal,
+                detalle: detalle,
+                accion: accion,
+            };
+            productosMovimiento.push(arrayProducto);
+        });
+        if(productosMovimiento.length <= 0) {document.getElementById('botones-accion-movimiento').innerHTML = '';}
+        else {
+            if(movimientoVenta.estado == 'Facturado') {
+                var divBTN = document.getElementById('botones-accion-movimiento');
+                divBTN.innerHTML = `
+                <div class="row" id="botones-accion-movimiento">
+                    <div class="col-md-6"><button class="btn btn-primary" style="width: 100%;" onclick="ImprimirFactura()">Imprimir</button></div>
+                    <div class="col-md-6"><button class="btn btn-primary bg-danger" style="width: 100%;" onclick="AnularDetalles()">Anular</button></div>
+                </div>`;
+            } else {
+                document.getElementById('botones-accion-movimiento').innerHTML = `
+                <div class="col-12" id="regUserDiv">
+                    <button onclick="RealizarFactura()" class="btn btn-primary">Facturar</button>
+                </div>`
+            }
+
+        }
+        renderTableCart(productosMovimiento)
+        listarMovimientos();
+    })  
+}
+
 /* ======================================facturado================================ */
 function Factura(id_detalle) {
     let movimiento = document.getElementById('id_movimiento').value;
@@ -416,9 +488,7 @@ function Factura(id_detalle) {
             'Authorization': 'Bearer ' + token,
         }
     }).then(res => res.json())
-        .then(data => {
-            listarDetalle(movimiento, 'facturado')
-        });
+        .then(() => listarDetalle(movimiento));
 }
 /* ===============finalizar la compra */
 function finalizarCompra() {
@@ -433,7 +503,7 @@ function finalizarCompra() {
 function AregarProductoCliente() {
 
     let cantidad = document.getElementById('inputCant').value;
-    let comprador = document.getElementById('inputPIdCliente').value;
+    comprador = comprador.value;
     let movimiento = document.getElementById('id_movimiento').value;
     let inventario = document.getElementById('id_inventario').value;
     let cargoCod = document.getElementById('cargo-usuario').value;
@@ -512,6 +582,33 @@ document.getElementById('ver-precios').addEventListener('click', (e) => {
     infoProductosPrecio.toggle();
 });
 $('#inputPIdCliente').focus();
+/* ===========ANULA EL DETALLE SELECCIONADO============ */
+function ConfirmarAnularDetalle(id_detalle){
+    Swal.fire({
+        title: '¿Deseas anular este detalle?',
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: 'Confirmar',
+        denyButtonText: `Cancelar`,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            EstadoAnulado(id_detalle)
+            .then(() => {
+                listarMovimientos();
+                generarVenta(comprador.value)
+            })
+        }
+    });
+}
+function EstadoAnulado(id_detalle) {
+    var datos = new URLSearchParams();
+    datos.append("id_detalle",id_detalle)
+    return fetch('/EstadoAnulado', {
+        method: 'post',
+        body: datos,
+        headers: {'Authorization': 'Bearer '+ token,}
+    }).then(res => res.json())
+}
 /* ===========selector para el ID FICHA=============== */
 document.getElementById('cargo').addEventListener('change', (e) => {
     var cargo = document.getElementById('cargo').value;
