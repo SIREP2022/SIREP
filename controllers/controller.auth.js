@@ -90,7 +90,6 @@ controllerAuth.editProfile = async (req, res) => {
     let tel = req.body.telefono;
     let foto = req.fileNewName;
     try{
-        console.log(req.session.user)
         if(!foto) foto = req.session.user.Foto;
         if(!foto) foto = 'default.png';
         // 
@@ -102,6 +101,20 @@ controllerAuth.editProfile = async (req, res) => {
         console.log(e)
     }
 }
+
+controllerAuth.deletePhoto = async (req, res) => {
+    try{
+        let id = req.params.id;
+        var foto = 'default.png';
+        // 
+        var sql = `update  personas set Foto = '${foto}' where identificacion=${id}`;
+        await query(sql);
+        return res.json({status: 'success', message: 'Foto editada con éxito'})
+    } catch(e) {
+        console.log(e)
+    }
+}
+
 controllerAuth.changePassword = async (req, res) => {
     let token = req.session.token;
     let decoded = jwt.verify(token, authConfig.secret);
