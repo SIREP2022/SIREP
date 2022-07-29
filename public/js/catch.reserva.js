@@ -144,8 +144,8 @@ function Abrir_Frm_Reserva(nombre, id, precio, stock, maxReserva, reservados, co
     document.getElementById('subtotal').value = precio;
     document.getElementById('reserva_grupal').value = res_grupal;
     let ficha = document.getElementById('ficha').value;
-    if(res_grupal == 'Si') document.getElementById('persona-reserva').setAttribute('style', 'display:block')
-    else document.getElementById('persona-reserva').setAttribute('style', 'display:none')
+    if(res_grupal == 'Si') document.getElementById('accordion').setAttribute('style', 'display:block')
+    else document.getElementById('accordion').setAttribute('style', 'display:none')
 
 
     Listar_Reservas_Pendientes(); // se lista las reserva pendiente
@@ -153,7 +153,7 @@ function Abrir_Frm_Reserva(nombre, id, precio, stock, maxReserva, reservados, co
     if (tipo_reserva == 'Grupal') {
         listarUsuaiosFicha(ficha); // se listan aprendices de la ficha
     } else {
-        document.getElementById('persona-reserva').setAttribute('style', 'display:none')
+        document.getElementById('accordion').setAttribute('style', 'display:none')
     }
 
     myModal.show();
@@ -187,47 +187,39 @@ function Disminuir() {
 }
 /* ===================registro reserva=============== */
 function RegistrarDetalle() {
-    /* ======================= */
-    let cantidad = document.getElementById('cantidad').innerHTML;
-    let id_producto = document.getElementById('cod_prod').value;
-    let id_movimiento = document.getElementById('id_movimiento_header').value;
     let tipo_res = document.getElementById('tipo_res').value;
-    let subtotal = document.getElementById('subtotal').value;
-    let reservados = document.getElementById('reservados').value;
-    let stock = document.getElementById('stockProd').value;
-    let control_inventario = document.getElementById('control_inventario').value;
-    if(reservados == 'null') reservados = 0;
-    if((parseInt(reservados) + parseInt(cantidad)) > parseInt(stock) && control_inventario == 'Si') {
-        return Swal.fire({
-            title: 'No hay reservas',
-            icon: 'error',
-            text: 'No hay stock disponible, fueron reservados.',
-            timer: 1500
-        })
-    }
-    /* ======================= */
-    var datos = new URLSearchParams();
-    datos.append('cantidad', cantidad);
-    datos.append('id_producto', id_producto);
-    datos.append('id_movimiento', id_movimiento);
-    datos.append('subtotal', subtotal);
-
-    if (tipo_res == 'Grupal') {
-        let persona = document.getElementById('persona-reserva').value;
-        if(!persona) persona = document.getElementById('ident').value;
-        datos.append('persona', persona);
-    } else {
-        let persona = document.getElementById('ident').value;
-        datos.append('persona', persona);
-    }
-    
-    fetch('/Registrar_Detalle', {
-        method: 'post',
-        body: datos,
-        headers: {
-            'Authorization': 'Bearer ' + token
+    function Registrar(identificacion) {
+        let cantidad = document.getElementById('cantidad').innerHTML;
+        let id_producto = document.getElementById('cod_prod').value;
+        let id_movimiento = document.getElementById('id_movimiento_header').value;
+        let subtotal = document.getElementById('subtotal').value;
+        let reservados = document.getElementById('reservados').value;
+        let stock = document.getElementById('stockProd').value;
+        let control_inventario = document.getElementById('control_inventario').value;
+        if(reservados == 'null') reservados = 0;
+        if((parseInt(reservados) + parseInt(cantidad)) > parseInt(stock) && control_inventario == 'Si') {
+            return Swal.fire({
+                title: 'No hay reservas',
+                icon: 'error',
+                text: 'No hay stock disponible, fueron reservados.',
+                timer: 1500
+            })
         }
-    }).then(res => res.json())
+        /* ======================= */
+        var datos = new URLSearchParams();
+        datos.append('cantidad', cantidad);
+        datos.append('id_producto', id_producto);
+        datos.append('id_movimiento', id_movimiento);
+        datos.append('subtotal', subtotal);
+        datos.append('persona', identificacion);
+        
+        fetch('/Registrar_Detalle', {
+            method: 'post',
+            body: datos,
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        }).then(res => res.json())
         .then(data => {
             Swal.fire({
                 title: data.titulo,
@@ -238,17 +230,30 @@ function RegistrarDetalle() {
             Listar_todos_Productos();
             Listar_Reservas_Pendientes();
         })
-    let cantistock = document.getElementById('cantidad').innerHTML = 1;
-    myModal.hide();
-    Listar_Reservas_Pendientes();
+        document.getElementById('cantidad').innerHTML = 1;
+        myModal.hide();
+        Listar_Reservas_Pendientes();
+    }
+    if (tipo_res == 'Grupal') {
+        let checkboxes = document.getElementsByName('checkbox-aprendiz');
+        let persona = document.getElementById('ident').value;
+        let count = 0;
+        checkboxes.forEach(element => {
+            if(element.checked){
+                count++;
+                Registrar(element.value)
+            }
+        });
+        // VALIDA SI HAY UNO O MAS
+        if(count <= 0) Registrar(persona);
+    } else {
+        let persona = document.getElementById('ident').value;
+        Registrar(persona);
+    }
 
+    
+    /* ======================= */
 }
-
-
-
-
-
-
 
 //=============LISTAR APRENDICES POR ID FICHA========================//
 function listarUsuaiosFicha(idFicha) {
@@ -258,16 +263,19 @@ function listarUsuaiosFicha(idFicha) {
     fetch('/Listar_Usuaios_Ficha', {
         method: 'post',
         body: datos,
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
+        headers: {'Authorization': 'Bearer ' + token}
     }).then(res => res.json())
         .then(data => {
-            let row = '<option value="">Selecciona aprendiz</option>';
+            let row = '';
+            let i = 0;
             data.forEach(e => {
-                row += '<option value="' + e.identificacion + '">';
-                row += +e.identificacion + ' | ' + e.Nombres;
-                row += '</option>';
+                i++;
+                row += `<div class="form-check">
+                    <input class="form-check-input checkbox-aprendiz" name="checkbox-aprendiz" type="checkbox" value="${e.identificacion}" id="checkbox-aprendiz-${i}">
+                    <label class="form-check-label checkbox-label" for="checkbox-aprendiz-${i}">
+                        <span>${e.identificacion}</span><span>${e.Nombres}</span>
+                    </label>
+                </div>`;
             });
             listarPersonas.innerHTML = row;
         })

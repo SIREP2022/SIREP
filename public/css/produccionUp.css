@@ -137,7 +137,7 @@ table.dataTable thead th, table.dataTable thead td {
     padding: 5px;
 }
 .date{
-    float: right;
+    display: flex;
     padding: 10px;
 }
 .idproduccion{

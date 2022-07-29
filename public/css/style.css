@@ -2,6 +2,16 @@
 	margin: 0;
 	padding: 0;
 }
+.form-check{
+	-webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; 
+}
+.checkbox-label{
+	display: grid;
+    grid-template-columns: 100px 1fr;
+}
 :root {
 	--color-sena: rgb(255, 103, 18);
 	--color-naranja: rgb(255, 164, 103);

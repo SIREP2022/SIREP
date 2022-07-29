@@ -86,7 +86,7 @@ function Listar_Produccion(){
         if(data.status == 401) return console.log(data)
         var tabla='';
         for(var i=0; i<data.length;i++){
-            tabla += '<tr ><td class="infocenter">'+data[i].Id_produccion+'</td>';
+            tabla += '<tr><td class="infocenter">'+data[i].Id_produccion+'</td>';
             tabla += '<td class="infocenter">'+data[i].Nombre+' '+data[i].Descripcion+'</td>';
             tabla += '<td class="infocenter">'+data[i].fecha+'</td>';
             tabla += '<td class="infocenter">'+data[i].Cantidad+'</td>';

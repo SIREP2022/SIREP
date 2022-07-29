@@ -171,17 +171,9 @@ function eliminarDetalle(id){
         }
     }).then(res => res.json())
     .then(data => {
-        
         if(data.status == 401) return console.log(data);
-        Swal.fire({
-            title: data.titulo,
-            icon: data.icon,
-            text:data.text,
-            timer: 1500
-        })
         if(url == '/admin') Listar_todos_Productos();
         Listar_Reservas_Pendientes()
-  
     })
 }
 document.addEventListener('click', (e) => {

@@ -29,7 +29,8 @@ controlador.llamarproductos = async(req,res)=>{
 }
 // =========== listar Unidad Productiva==================
 controlador.Produccion = async (req,res)=>{
-    sql = 'select Nombre,codigo_up from unidades_productivas where estado = "Activo";' // unidades productivas 
+    let sql = `SELECT DISTINCT fk_codigo_up as codigo_up, up.Nombre FROM productos p 
+    JOIN unidades_productivas up on up.codigo_up = p.fk_codigo_up WHERE up.estado = 'Activo';` // unidades productivas 
     let rows = await query(sql);
     res.render('admin/produccionUp.ejs',{up:rows, profile: req.session.user});
 }
